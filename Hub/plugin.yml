@@ -1,0 +1,13 @@
+name: MCShockwaveHub
+main: net.mcshockwave.Hub.HubPlugin
+version: 1.0
+author: Blaxcraft
+depend: [MCShockwave]
+commands:
+   lounge:
+   head:
+   pets:
+   hc:
+   pvp:
+   trail:
+      aliases: [nt]
