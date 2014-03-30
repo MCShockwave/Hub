@@ -149,6 +149,9 @@ public class DefaultListener implements Listener {
 		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
 			c = Color.RED;
 		}
+		if (SQLTable.hasRank(p.getName(), Rank.YOUTUBE)) {
+			c = Color.fromRGB(128, 0, 0);
+		}
 		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
 	}
 
