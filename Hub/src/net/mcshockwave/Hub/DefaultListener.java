@@ -784,6 +784,10 @@ public class DefaultListener implements Listener {
 		if (event.getEntity().getType() == EntityType.VILLAGER && event.getCause() != DamageCause.MAGIC) {
 			event.setCancelled(true);
 		}
+		
+		if (event.getCause() == DamageCause.PROJECTILE) {
+			event.setCancelled(false);
+		}
 
 		if (event.getEntityType() == EntityType.PLAYER) {
 			if (!isInArena(event.getEntity()) || event.getCause().name().contains("EXPLOSION")) {
