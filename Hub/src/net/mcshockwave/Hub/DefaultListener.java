@@ -66,7 +66,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -154,15 +153,6 @@ public class DefaultListener implements Listener {
 			c = Color.fromRGB(128, 0, 0);
 		}
 		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
-
-		// TODO remove this after apr 1
-		ItemStack cake = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta skm = (SkullMeta) cake.getItemMeta();
-		skm.setOwner("MHF_Cake");
-		skm.setDisplayName("You are now a cake");
-		cake.setItemMeta(skm);
-		
-		p.getInventory().setHelmet(cake);
 	}
 
 	HashMap<Player, Long>							coolBROD	= new HashMap<>();
