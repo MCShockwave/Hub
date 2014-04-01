@@ -81,7 +81,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-@SuppressWarnings("unused")
 public class DefaultListener implements Listener {
 
 	HubPlugin	plugin;
@@ -124,9 +123,9 @@ public class DefaultListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-    //April fools joke requested by Carro.
+
 	public static void giveHelm(Player p) {
-		/*Color c = Color.GRAY;
+		Color c = Color.GRAY;
 		if (SQLTable.hasRank(p.getName(), Rank.GOLD)) {
 			c = Color.YELLOW;
 		}
@@ -154,12 +153,16 @@ public class DefaultListener implements Listener {
 		if (SQLTable.Youtubers.has("Username", p.getName())) {
 			c = Color.fromRGB(128, 0, 0);
 		}
-		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));*/
-		ItemStack i = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
-		SkullMeta skm = (SkullMeta) i.getItemMeta();
+		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
+
+		// TODO remove this after apr 1
+		ItemStack cake = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta skm = (SkullMeta) cake.getItemMeta();
 		skm.setOwner("MHF_Cake");
-		skm.setDisplayName("You are now a cake.");
-		i.setItemMeta(skm);
+		skm.setDisplayName("You are now a cake");
+		cake.setItemMeta(skm);
+		
+		p.getInventory().setHelmet(cake);
 	}
 
 	HashMap<Player, Long>							coolBROD	= new HashMap<>();
@@ -410,7 +413,8 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		final Material[] ms = { Material.COOKED_CHICKEN, Material.BOW, Material.BEACON, Material.DISPENSER, Material.ENDER_PEARL };
+		final Material[] ms = { Material.COOKED_CHICKEN, Material.BOW, Material.BEACON, Material.DISPENSER,
+				Material.ENDER_PEARL };
 
 		if (p.getGameMode() != GameMode.CREATIVE && !(Arrays.asList(ms).contains(it.getType()))) {
 			event.setCancelled(true);
@@ -794,7 +798,7 @@ public class DefaultListener implements Listener {
 		if (event.getEntity().getType() == EntityType.VILLAGER && event.getCause() != DamageCause.MAGIC) {
 			event.setCancelled(true);
 		}
-		
+
 		if (event.getCause() == DamageCause.PROJECTILE) {
 			event.setCancelled(false);
 		}
@@ -852,11 +856,11 @@ public class DefaultListener implements Listener {
 		int rad = 50;
 		return e.getLocation().distanceSquared(PVPCommand.arenaPVP(e.getWorld())) < rad * rad;
 	}
-	
+
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
 		event.setDroppedExp(0);
-		
+
 		if (event.getEntityType() == EntityType.ENDERMAN) {
 			event.getDrops().add(new ItemStack(Material.ENDER_PEARL));
 		}
@@ -887,7 +891,7 @@ public class DefaultListener implements Listener {
 		if (TrailCommand.using.contains(p)) {
 			PacketUtils.playParticleEffect(ParticleEffect.FLAME, p.getLocation(), 0.3f, 0.05f, 3);
 		}
-		
+
 		if (rand.nextInt(10000) == 0 && isInArena(p)) {
 			RandomEvent.startRandom();
 		}
