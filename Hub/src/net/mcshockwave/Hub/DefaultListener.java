@@ -66,6 +66,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -80,6 +81,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class DefaultListener implements Listener {
 
 	HubPlugin	plugin;
@@ -122,9 +124,9 @@ public class DefaultListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-
+    //April fools joke requested by Carro.
 	public static void giveHelm(Player p) {
-		Color c = Color.GRAY;
+		/*Color c = Color.GRAY;
 		if (SQLTable.hasRank(p.getName(), Rank.GOLD)) {
 			c = Color.YELLOW;
 		}
@@ -149,7 +151,15 @@ public class DefaultListener implements Listener {
 		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
 			c = Color.RED;
 		}
-		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
+		if (SQLTable.Youtubers.has("Username", p.getName())) {
+			c = Color.fromRGB(128, 0, 0);
+		}
+		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));*/
+		ItemStack i = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
+		SkullMeta skm = (SkullMeta) i.getItemMeta();
+		skm.setOwner("MHF_Cake");
+		skm.setDisplayName("You are now a cake.");
+		i.setItemMeta(skm);
 	}
 
 	HashMap<Player, Long>							coolBROD	= new HashMap<>();
