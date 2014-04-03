@@ -791,6 +791,7 @@ public class DefaultListener implements Listener {
 
 		if (event.getCause() == DamageCause.PROJECTILE) {
 			event.setCancelled(false);
+			return;
 		}
 
 		if (event.getEntityType() == EntityType.PLAYER) {
