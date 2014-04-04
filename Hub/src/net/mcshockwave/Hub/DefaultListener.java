@@ -423,6 +423,10 @@ public class DefaultListener implements Listener {
 	public static HashMap<Player, Block>			engineer	= new HashMap<>();
 	public static HashMap<Player, SchedulerUtils>	turretTask	= new HashMap<>();
 
+	public boolean isInTube(Location l) {
+		return l.getX() < 3 && l.getZ() < 3 && l.getX() > -3 && l.getZ() > -3;
+	}
+
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		final Player p = event.getPlayer();
@@ -437,7 +441,8 @@ public class DefaultListener implements Listener {
 
 			if (b.getType() != Material.AIR && b.getType() != Material.BEACON
 					|| b.getRelative(BlockFace.UP).getType() != Material.AIR || !isInArena(p)
-					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8) {
+					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8
+					|| isInTube(b.getLocation())) {
 				p.sendMessage("§cInvalid healer location");
 				return;
 			}
@@ -520,7 +525,8 @@ public class DefaultListener implements Listener {
 
 			if (b.getType() != Material.AIR && b.getType() != Material.DISPENSER
 					|| b.getRelative(BlockFace.UP).getType() != Material.AIR || !isInArena(p)
-					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8) {
+					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8
+					|| isInTube(b.getLocation())) {
 				p.sendMessage("§cInvalid turret location");
 				return;
 			}
