@@ -97,6 +97,12 @@ public class HubPlugin extends JavaPlugin {
 	}
 
 	public static void setVils() {
+		for (Entity e : dW().getEntities()) {
+			if (e.getType() == EntityType.VILLAGER) {
+				e.remove();
+			}
+		}
+		
 		for (int i = 0; i < vLocs.length; i++) {
 			Location l = new Location(dW(), vLocs[i].getX(), vLocs[i].getY(), vLocs[i].getZ());
 			String n = vNames[i];
