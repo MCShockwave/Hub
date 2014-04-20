@@ -74,7 +74,7 @@ public class HubPlugin extends JavaPlugin {
 			public void run() {
 				setVils();
 			}
-		}, 10l);
+		}, 100l);
 
 		regSigns();
 	}
