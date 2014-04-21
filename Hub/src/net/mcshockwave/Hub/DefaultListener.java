@@ -96,7 +96,7 @@ public class DefaultListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
 		p.teleport(p.getWorld().getSpawnLocation().add(0, 5, 0));
-		p.setHealth(20);
+		p.setHealth(20f);
 		p.setFoodLevel(20);
 		p.setSaturation(2);
 		p.setGameMode(GameMode.ADVENTURE);
@@ -247,7 +247,7 @@ public class DefaultListener implements Listener {
 							if (e instanceof LivingEntity && e != p) {
 								LivingEntity le = (LivingEntity) e;
 
-								le.damage(rand.nextInt(8) + 10, p);
+								le.damage(rand.nextInt(8) + 10f, p);
 							}
 						}
 					}
@@ -340,7 +340,7 @@ public class DefaultListener implements Listener {
 
 								for (Entity e : i.getNearbyEntities(3, 3, 3)) {
 									if (e instanceof LivingEntity) {
-										((LivingEntity) e).damage(rand.nextInt(10) + 5, p);
+										((LivingEntity) e).damage(rand.nextInt(10) + 5f, p);
 									}
 								}
 
@@ -559,6 +559,7 @@ public class DefaultListener implements Listener {
 			sc.add("§aPlaced turret");
 			for (int i = 0; i < totalTicks; i += tickUpdate) {
 				sc.add(new Runnable() {
+					@SuppressWarnings("deprecation")
 					public void run() {
 						ne.teleport(bl);
 
@@ -834,7 +835,7 @@ public class DefaultListener implements Listener {
 		}
 
 		if (de instanceof SmallFireball) {
-			event.setDamage(3);
+			event.setDamage(3f);
 			if (ee.getFireTicks() < 10) {
 				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 					public void run() {

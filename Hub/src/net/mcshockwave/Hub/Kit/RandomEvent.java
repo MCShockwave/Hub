@@ -106,7 +106,7 @@ public enum RandomEvent implements Listener {
 							public void run() {
 								for (Entity e : tnt.getNearbyEntities(5, 5, 5)) {
 									if (e instanceof LivingEntity) {
-										((LivingEntity) e).damage(10);
+										((LivingEntity) e).damage(10f);
 									}
 								}
 							}

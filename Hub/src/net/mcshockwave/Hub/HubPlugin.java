@@ -20,7 +20,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -30,9 +30,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-
 import io.github.dsh105.echopet.api.EchoPetAPI;
+
+import java.util.ArrayList;
 
 public class HubPlugin extends JavaPlugin {
 	
@@ -107,7 +107,7 @@ public class HubPlugin extends JavaPlugin {
 			Location l = new Location(dW(), vLocs[i].getX(), vLocs[i].getY(), vLocs[i].getZ());
 			String n = vNames[i];
 
-			net.minecraft.server.v1_7_R1.World w = ((CraftWorld) l.getWorld()).getHandle();
+			net.minecraft.server.v1_7_R2.World w = ((CraftWorld) l.getWorld()).getHandle();
 			@SuppressWarnings("deprecation")
 			ServerSelector ent = new ServerSelector(w, Profession.BUTCHER.getId(), l.getBlockX(), l.getBlockY(),
 					l.getBlockZ());

@@ -3,13 +3,13 @@ package net.mcshockwave.Hub.Commands;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.Hub.ServerSelector;
 import net.mcshockwave.Hub.Kit.RandomEvent;
-import net.minecraft.server.v1_7_R1.World;
+import net.minecraft.server.v1_7_R2.World;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
