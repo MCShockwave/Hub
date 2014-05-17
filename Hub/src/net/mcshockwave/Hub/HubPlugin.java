@@ -12,6 +12,7 @@ import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
 import net.mcshockwave.MCS.Utils.CustomSignUtils.CustomSign;
 import net.mcshockwave.MCS.Utils.CustomSignUtils.SignRunnable;
+import net.minecraft.server.v1_7_R2.EntityVillager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +21,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -30,13 +30,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import io.github.dsh105.echopet.api.EchoPetAPI;
-
 import java.util.ArrayList;
 
+import com.dsh105.echopet.api.EchoPetAPI;
+
 public class HubPlugin extends JavaPlugin {
-	
-	public static HubPlugin ins = null;
+
+	public static HubPlugin			ins		= null;
 
 	public static EchoPetAPI		petApi	= null;
 
@@ -46,7 +46,7 @@ public class HubPlugin extends JavaPlugin {
 
 	public void onEnable() {
 		ins = this;
-		
+
 		Bukkit.getPluginManager().registerEvents(new DefaultListener(this), this);
 		Bukkit.getPluginManager().registerEvents(RandomEvent.BIOME_LOCK, this);
 
@@ -68,7 +68,8 @@ public class HubPlugin extends JavaPlugin {
 
 		petApi = EchoPetAPI.getAPI();
 
-		CustomEntityRegistrar.addCustomEntity(ServerSelector.class, "Villager", EntityType.VILLAGER);
+		CustomEntityRegistrar.addCustomEntity("Villager", EntityType.VILLAGER, EntityVillager.class,
+				ServerSelector.class);
 
 		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
 			public void run() {
@@ -89,33 +90,34 @@ public class HubPlugin extends JavaPlugin {
 							p.sendMessage("§aEntering arena");
 
 							k2.use(p);
-							
+
 							petApi.removePet(p, false, false);
 						}
 					});
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void setVils() {
 		for (Entity e : dW().getEntities()) {
 			if (e.getType() == EntityType.VILLAGER) {
 				e.remove();
 			}
 		}
-		
+
 		for (int i = 0; i < vLocs.length; i++) {
 			Location l = new Location(dW(), vLocs[i].getX(), vLocs[i].getY(), vLocs[i].getZ());
 			String n = vNames[i];
 
-			net.minecraft.server.v1_7_R2.World w = ((CraftWorld) l.getWorld()).getHandle();
-			@SuppressWarnings("deprecation")
-			ServerSelector ent = new ServerSelector(w, Profession.BUTCHER.getId(), l.getBlockX(), l.getBlockY(),
-					l.getBlockZ());
-			ent.setLocation(l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
-			w.addEntity(ent);
+			ServerSelector ss = (ServerSelector) CustomEntityRegistrar.spawnCustomEntity(ServerSelector.class, l);
+			ss.x = l.getBlockX();
+			ss.y = l.getBlockY();
+			ss.z = l.getBlockZ();
 
-			ent.setCustomName(n);
-			ent.setCustomNameVisible(true);
+			ss.setProfession(Profession.BUTCHER.getId());
+
+			ss.setCustomName(n);
+			ss.setCustomNameVisible(true);
 		}
 	}
 
@@ -129,17 +131,17 @@ public class HubPlugin extends JavaPlugin {
 				e.remove();
 			}
 		}
-		
+
 		for (Block b : DefaultListener.medic.values()) {
 			b.setType(Material.AIR);
 			b.getRelative(BlockFace.DOWN).setType(Material.AIR);
 		}
-		
+
 		for (Block b : DefaultListener.engineer.values()) {
 			b.setType(Material.AIR);
 			b.getRelative(BlockFace.DOWN).setType(Material.AIR);
 		}
-		
+
 		for (ArrayList<Item> is : DefaultListener.demoman.values()) {
 			for (Item it : is) {
 				it.remove();

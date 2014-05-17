@@ -71,14 +71,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import io.github.dsh105.echopet.entity.PetType;
-import io.github.dsh105.echopet.entity.living.LivingPet;
-import io.github.dsh105.echopet.entity.living.type.ocelot.OcelotPet;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+
+import com.dsh105.echopet.api.pet.type.OcelotPet;
+import com.dsh105.echopet.compat.api.entity.IPet;
+import com.dsh105.echopet.compat.api.entity.PetType;
 
 public class DefaultListener implements Listener {
 
@@ -722,8 +722,8 @@ public class DefaultListener implements Listener {
 					}
 				}
 				if (pet != null) {
-					LivingPet lp = (LivingPet) HubPlugin.petApi.givePet(p, pet.t, true);
-					lp.setName(p.getName() + "'s " + pet.name().replace('_', ' '));
+					IPet lp = HubPlugin.petApi.givePet(p, pet.t, true);
+					lp.setPetName(p.getName() + "'s " + pet.name().replace('_', ' '));
 					if (lp.getPetType() == PetType.OCELOT) {
 						OcelotPet op = (OcelotPet) lp;
 						op.setCatType(Type.BLACK_CAT);

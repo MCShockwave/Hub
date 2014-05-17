@@ -1,14 +1,11 @@
 package net.mcshockwave.Hub.Commands;
 
-import io.github.dsh105.echopet.entity.PetType;
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
 import net.mcshockwave.MCS.Currency.ItemsUtils;
 import net.mcshockwave.MCS.Currency.LevelUtils;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
-
-import org.apache.commons.lang.WordUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +15,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import org.apache.commons.lang.WordUtils;
+
+import com.dsh105.echopet.compat.api.entity.PetType;
 
 public class PetCommand implements CommandExecutor {
 
