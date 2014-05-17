@@ -28,22 +28,27 @@ public class HubCommand implements CommandExecutor {
 				ent.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 				w.addEntity(ent);
 			}
-			
+
 			if (args[0].equalsIgnoreCase("resetVillagers")) {
 				for (Entity e : HubPlugin.dW().getEntities()) {
 					if (e.getType() == EntityType.VILLAGER) {
 						e.remove();
 					}
 				}
-				
+
 				HubPlugin.setVils();
 			}
-			
+
 			if (args[0].equalsIgnoreCase("event")) {
 				RandomEvent.startRandom();
 			}
 			if (args[0].equalsIgnoreCase("sEvent")) {
 				RandomEvent.startRandom(true);
+			}
+
+			if (args[0].equalsIgnoreCase("spawnpoint")) {
+				Location l = p.getLocation();
+				p.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
 			}
 		}
 		return false;

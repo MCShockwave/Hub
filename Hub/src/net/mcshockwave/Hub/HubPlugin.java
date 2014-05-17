@@ -40,9 +40,16 @@ public class HubPlugin extends JavaPlugin {
 
 	public static EchoPetAPI		petApi	= null;
 
-	public static final Vector[]	vLocs	= { new Vector(-196.5, 112, 171.5), new Vector(-188.5, 112, 163.5),
-			new Vector(-204.5, 112, 163.5), new Vector(-196.5, 112, 155.5) };
-	public static final String[]	vNames	= { "Minigames Servers", "Mynerim SG", "Zombiez TD", "Staff Servers" };
+	// public static final Vector[] vLocs = { new Vector(-196.5, 112, 171.5),
+	// new Vector(-188.5, 112, 163.5),
+	// new Vector(-204.5, 112, 163.5), new Vector(-196.5, 112, 155.5) };
+	// public static final String[] vNames = { "Minigames Servers",
+	// "Mynerim SG", "Zombiez TD", "Staff Servers" };
+
+	public static final Vector[]	vLocs	= { new Vector(42.5, 94, 20.5), new Vector(0.5, 94, 53.5),
+			new Vector(-41.5, 94, 50.5), new Vector(-41.5, 94, 20.5), new Vector(42.5, 94, 50.5) };
+	public static final String[]	vNames	= { "Minigames Servers", "Minigames Servers", "Mynerim SG", "Zombiez TD",
+			"Staff Servers"				};
 
 	public void onEnable() {
 		ins = this;

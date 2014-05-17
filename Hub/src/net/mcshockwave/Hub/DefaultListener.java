@@ -851,6 +851,10 @@ public class DefaultListener implements Listener {
 	}
 
 	public static boolean isInArena(Entity e) {
+		if (!PVPCommand.isEnabled()) {
+			return false;
+		}
+
 		int rad = 50;
 		return e.getLocation().distanceSquared(PVPCommand.arenaPVP(e.getWorld())) < rad * rad;
 	}
