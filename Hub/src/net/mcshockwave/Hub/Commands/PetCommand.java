@@ -26,7 +26,7 @@ public class PetCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			
+
 			if (DefaultListener.isInArena(p)) {
 				p.sendMessage("§c/pets is disabled in the PVP arena");
 				return false;
@@ -57,9 +57,6 @@ public class PetCommand implements CommandExecutor {
 
 	public enum MCSPet {
 		// rank unlocked
-		Human(
-			Rank.JR_MOD,
-			PetType.HUMAN),
 		Witch(
 			Rank.ENDER,
 			PetType.WITCH),
