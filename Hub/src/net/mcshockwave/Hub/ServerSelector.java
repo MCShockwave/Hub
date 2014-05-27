@@ -9,7 +9,7 @@ import net.minecraft.server.v1_7_R2.World;
 
 public class ServerSelector extends EntityVillager {
 
-	public int	x	= 0, y = 0, z = 0;
+	public PathfinderGoalGoToBlock pathfind = new PathfinderGoalGoToBlock(this, 0.75f, 0, 0, 0);
 
 	public ServerSelector(World world) {
 		this(world, 0, 0, 0);
@@ -43,7 +43,10 @@ public class ServerSelector extends EntityVillager {
 		// EntityHuman.class, 3.0F, 1.0F));
 		// this.goalSelector.a(9, new PathfinderGoalInteract(this,
 		// EntityVillager.class, 5.0F, 0.02F));
-		this.goalSelector.a(0, new PathfinderGoalGoToBlock(this, 0.75f, x, y, z));
+		pathfind.x = x;
+		pathfind.y = y;
+		pathfind.z = z;
+		this.goalSelector.a(0, pathfind);
 		this.goalSelector.a(1, new PathfinderGoalLookAtPlayer(this, EntityInsentient.class, 8.0F));
 	}
 

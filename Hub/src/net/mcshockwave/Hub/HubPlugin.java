@@ -13,6 +13,7 @@ import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
 import net.mcshockwave.MCS.Utils.CustomSignUtils.CustomSign;
 import net.mcshockwave.MCS.Utils.CustomSignUtils.SignRunnable;
 import net.minecraft.server.v1_7_R2.EntityVillager;
+import net.minecraft.server.v1_7_R2.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -104,7 +106,6 @@ public class HubPlugin extends JavaPlugin {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void setVils() {
 		for (Entity e : dW().getEntities()) {
 			if (e.getType() == EntityType.VILLAGER) {
@@ -116,12 +117,11 @@ public class HubPlugin extends JavaPlugin {
 			Location l = new Location(dW(), vLocs[i].getX(), vLocs[i].getY(), vLocs[i].getZ());
 			String n = vNames[i];
 
-			ServerSelector ss = (ServerSelector) CustomEntityRegistrar.spawnCustomEntity(ServerSelector.class, l);
-			ss.x = l.getBlockX();
-			ss.y = l.getBlockY();
-			ss.z = l.getBlockZ();
+			WorldServer ws = ((CraftWorld) l.getWorld()).getHandle();
 
-			ss.setProfession(Profession.BUTCHER.getId());
+			ServerSelector ss = new ServerSelector(ws, Profession.BUTCHER, l.getBlockX(), l.getBlockY(), l.getBlockZ());
+			ss.setPosition(l.getX(), l.getY(), l.getZ());
+			ws.addEntity(ss);
 
 			ss.setCustomName(n);
 			ss.setCustomNameVisible(true);

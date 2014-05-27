@@ -11,7 +11,7 @@ public class PathfinderGoalGoToBlock extends PathfinderGoal {
 	private double			c;
 	private double			d;
 	private double			e;
-	private double			x, y, z;
+	public double			x, y, z;
 
 	public PathfinderGoalGoToBlock(EntityCreature entitycreature, double s, double x, double y, double z) {
 		this.a = entitycreature;
