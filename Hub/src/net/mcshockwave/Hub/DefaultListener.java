@@ -406,7 +406,8 @@ public class DefaultListener implements Listener {
 		final Material[] ms = { Material.COOKED_CHICKEN, Material.BOW, Material.BEACON, Material.DISPENSER,
 				Material.ENDER_PEARL };
 
-		if (p.getGameMode() != GameMode.CREATIVE && !(Arrays.asList(ms).contains(it.getType()))) {
+		if (p.getGameMode() != GameMode.CREATIVE && !(Arrays.asList(ms).contains(it.getType()))
+				&& event.getAction() != Action.PHYSICAL) {
 			event.setCancelled(true);
 		} else
 			event.setCancelled(false);
