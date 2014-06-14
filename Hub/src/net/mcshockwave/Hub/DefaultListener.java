@@ -1046,7 +1046,7 @@ public class DefaultListener implements Listener {
 					getMenuStaff().open(p);
 				}
 				if (n.equalsIgnoreCase("Battle Bane")) {
-					getMenuStaff().open(p);
+					getMenuBB().open(p);
 				}
 			}
 		}
