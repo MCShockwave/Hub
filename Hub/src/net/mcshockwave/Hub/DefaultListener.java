@@ -1045,6 +1045,9 @@ public class DefaultListener implements Listener {
 				if (n.equalsIgnoreCase("Staff Servers")) {
 					getMenuStaff().open(p);
 				}
+				if (n.equalsIgnoreCase("Battle Bane")) {
+					getMenuStaff().open(p);
+				}
 			}
 		}
 	}
@@ -1148,6 +1151,23 @@ public class DefaultListener implements Listener {
 		ztd.addButton(ztd1, 4);
 
 		return ztd;
+	}
+
+	public ItemMenu getMenuBB() {
+		ItemMenu bb = new ItemMenu("Battle Bane", 9);
+
+		Button bb1 = new Button(true, Material.NETHER_STAR, 1, 0, "Battle Bane", "Click to join server", "",
+				"Players: " + MCShockwave.getPlayerCount("bane") + " / 80");
+
+		bb1.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				MCShockwave.connectToServer(p, "bane", "Battle Bane");
+			}
+		});
+
+		bb.addButton(bb1, 4);
+
+		return bb;
 	}
 
 }

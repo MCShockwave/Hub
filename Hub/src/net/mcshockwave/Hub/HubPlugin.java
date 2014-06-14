@@ -51,7 +51,7 @@ public class HubPlugin extends JavaPlugin {
 	public static final Vector[]	vLocs	= { new Vector(42.5, 94, 20.5), new Vector(0.5, 94, 53.5),
 			new Vector(-41.5, 94, 50.5), new Vector(-41.5, 94, 20.5), new Vector(42.5, 94, 50.5) };
 	public static final String[]	vNames	= { "Minigames Servers", "Staff Servers", "Mynerim SG", "Zombiez TD",
-			"§kUnknown Gamemode!"			};
+			"Battle Bane"					};
 
 	public void onEnable() {
 		ins = this;
