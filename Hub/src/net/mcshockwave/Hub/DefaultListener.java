@@ -95,7 +95,7 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
-		p.teleport(p.getWorld().getSpawnLocation().add(0, 5, 0));
+		p.teleport(HubPlugin.dW().getSpawnLocation().add(0, 5, 0));
 		p.setHealth(20f);
 		p.setFoodLevel(20);
 		p.setSaturation(2);
@@ -819,6 +819,10 @@ public class DefaultListener implements Listener {
 		if (ee instanceof Player && de instanceof Player) {
 			Player p = (Player) ee;
 			Player d = (Player) de;
+
+			if (d.getGameMode() == GameMode.CREATIVE) {
+				event.setCancelled(false);
+			}
 
 			if (isInArena(p) && isInArena(d)) {
 				resetDurability(p);

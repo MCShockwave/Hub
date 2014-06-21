@@ -1,6 +1,7 @@
 package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.DefaultListener;
+import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
 
@@ -27,7 +28,7 @@ public class LoungeCommand implements CommandExecutor {
 					return false;
 				}
 				DefaultListener.resetPlayerInv(p);
-				p.teleport(vecToLoc(p.getWorld()));
+				p.teleport(vecToLoc(HubPlugin.dW()));
 				p.sendMessage(ChatColor.AQUA + "Teleported to the VIP Lounge");
 			} else
 				p.sendMessage(ChatColor.RED

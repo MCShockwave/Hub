@@ -5,6 +5,7 @@ import net.mcshockwave.Hub.Commands.HubCommand;
 import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.PetCommand;
+import net.mcshockwave.Hub.Commands.SpawnCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.RandomEvent;
@@ -65,6 +66,7 @@ public class HubPlugin extends JavaPlugin {
 		getCommand("trail").setExecutor(new TrailCommand());
 		getCommand("hc").setExecutor(new HubCommand());
 		getCommand("pvp").setExecutor(new PVPCommand());
+		getCommand("spawn").setExecutor(new SpawnCommand());
 
 		MCShockwave.mesJoin = "";
 		MCShockwave.mesKick = "";

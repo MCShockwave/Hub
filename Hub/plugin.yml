@@ -11,3 +11,4 @@ commands:
    pvp:
    trail:
       aliases: [nt]
+   spawn:
