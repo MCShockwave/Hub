@@ -902,6 +902,10 @@ public class DefaultListener implements Listener {
 		if (rand.nextInt(10000) == 0 && isInArena(p)) {
 			RandomEvent.startRandom();
 		}
+		
+		if (event.getTo().getY() <= 0) {
+			p.teleport(p.getWorld().getSpawnLocation().add(0, 5, 0));
+		}
 	}
 
 	public static boolean sameCoords(PlayerMoveEvent event) {
