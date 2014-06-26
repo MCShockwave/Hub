@@ -1,11 +1,17 @@
 package net.mcshockwave.Hub.Kit;
 
+import net.mcshockwave.Guns.Gun;
+import net.mcshockwave.Guns.addons.Addon;
+import net.mcshockwave.Guns.descriptors.Category;
+import net.mcshockwave.Guns.descriptors.GunType;
+import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.Menu.ItemMenu;
 import net.mcshockwave.MCS.Menu.ItemMenu.Button;
 import net.mcshockwave.MCS.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,6 +22,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public enum Kit {
@@ -83,8 +91,10 @@ public enum Kit {
 		i(Material.GOLD_AXE),
 		i(Material.FLINT_AND_STEEL));
 
-	public ItemStack[]	acontents;
-	public ItemStack[]	contents;
+	public ItemStack[]		acontents;
+	public ItemStack[]		contents;
+
+	public static boolean	gunmode	= false;
 
 	private Kit(ItemStack h, ItemStack c, ItemStack l, ItemStack b, ItemStack... items) {
 		acontents = new ItemStack[] { b, l, c, h };
@@ -99,22 +109,38 @@ public enum Kit {
 	}
 
 	public static ItemMenu getSelectorMenu(Player p) {
-		int le = values().length;
-		ItemMenu m = new ItemMenu("Kits", ((le + 8) / 9) * 9);
+		ItemMenu m;
+		if (!gunmode) {
+			int le = values().length;
+			m = new ItemMenu("Kits", ((le + 8) / 9) * 9);
 
-		for (int i = 0; i < le; i++) {
-			final Kit k = values()[i];
+			for (int i = 0; i < le; i++) {
+				final Kit k = values()[i];
 
-			Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a" + k.name(),
-					"Click to use");
-			m.addButton(b, i);
-			b.setOnClick(new ButtonRunnable() {
+				Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a"
+						+ k.name(), "Click to use");
+				m.addButton(b, i);
+				b.setOnClick(new ButtonRunnable() {
+					public void run(Player p, InventoryClickEvent event) {
+						// p.teleport(PVPCommand.arena(HubPlugin.dW()));
+						p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
+						p.sendMessage("§aEntering arena with kit " + k.name());
+
+						k.use(p);
+					}
+				});
+			}
+		} else {
+			m = new ItemMenu("Gun Mode", 9);
+
+			Button enter = new Button(true, Material.WOOD_HOE, 1, 0, "Gun Mode", "Click to enter");
+			m.addButton(enter, 4);
+			enter.setOnClick(new ButtonRunnable() {
 				public void run(Player p, InventoryClickEvent event) {
-					// p.teleport(PVPCommand.arena(HubPlugin.dW()));
 					p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
-					p.sendMessage("§aEntering arena with kit " + k.name());
+					p.sendMessage("§aEntering arena (Gun mode)");
 
-					k.use(p);
+					giveGunKit(p);
 				}
 			});
 		}
@@ -153,9 +179,55 @@ public enum Kit {
 		HubPlugin.petApi.removePet(p, false, true);
 	}
 
+	private static Category	gunCategory	= Category.Wasteland;
+
+	private static String[]	materials	= { "LEATHER", "CHAINMAIL", "IRON" };
+
+	public static void giveGunKit(Player p) {
+		p.getInventory().clear();
+		List<Gun> prim = new ArrayList<>();
+		List<Gun> seco = new ArrayList<>();
+		for (Gun g : gunCategory.getGuns()) {
+			if (g.type == GunType.PISTOL) {
+				seco.add(g);
+			} else {
+				prim.add(g);
+			}
+		}
+
+		ItemStack prWep = prim.get(rand.nextInt(prim.size())).getItem();
+		ItemStack seWep = seco.get(rand.nextInt(seco.size())).getItem();
+
+		Addon.Infinite_Ammo.add(prWep);
+		Addon.Bottomless_Clip.add(seWep);
+
+		p.getInventory().addItem(prWep);
+		p.getInventory().addItem(seWep);
+
+		p.getInventory().setHelmet(
+				new ItemStack(Material.valueOf(materials[rand.nextInt(materials.length)] + "_HELMET")));
+		p.getInventory().setChestplate(
+				new ItemStack(Material.valueOf(materials[rand.nextInt(materials.length)] + "_CHESTPLATE")));
+		p.getInventory().setLeggings(
+				new ItemStack(Material.valueOf(materials[rand.nextInt(materials.length)] + "_LEGGINGS")));
+		p.getInventory()
+				.setBoots(new ItemStack(Material.valueOf(materials[rand.nextInt(materials.length)] + "_BOOTS")));
+	}
+
 	public static void clearPE(Player p) {
 		for (PotionEffect pe : p.getActivePotionEffects()) {
 			p.removePotionEffect(pe.getType());
+		}
+	}
+
+	public static void toggleGunMode() {
+		gunmode = !gunmode;
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (DefaultListener.isInArena(p)) {
+				p.damage(p.getMaxHealth());
+				p.sendMessage("§7[§e§lPVP§7] §fToggling gun mode (Now " + gunmode + ")");
+			}
 		}
 	}
 
@@ -169,7 +241,7 @@ public enum Kit {
 			int z = rand.nextInt(rad * 2) - rad;
 			int y = w.getHighestBlockYAt(x, z);
 			Location l = new Location(w, x, y - 1, z);
-			if (l.getBlock().getType() != Material.ENDER_STONE) {
+			if (l.getBlock().getType() != Material.ENDER_STONE || y > 100) {
 				tries--;
 				continue;
 			}

@@ -569,7 +569,6 @@ public class DefaultListener implements Listener {
 			sc.add("§aPlaced turret");
 			for (int i = 0; i < totalTicks; i += tickUpdate) {
 				sc.add(new Runnable() {
-					@SuppressWarnings("deprecation")
 					public void run() {
 						ne.teleport(bl);
 
@@ -1012,10 +1011,12 @@ public class DefaultListener implements Listener {
 	public static void resetDurability(Player p) {
 		PlayerInventory pi = p.getInventory();
 
-		for (ItemStack it : pi.getContents()) {
-			if (it != null && it.getType() != Material.AIR && it.getType().getMaxDurability() > 16) {
-				if (it.getDurability() > 0) {
-					it.setDurability((short) 0);
+		if (!Kit.gunmode) {
+			for (ItemStack it : pi.getContents()) {
+				if (it != null && it.getType() != Material.AIR && it.getType().getMaxDurability() > 16) {
+					if (it.getDurability() > 0) {
+						it.setDurability((short) 0);
+					}
 				}
 			}
 		}

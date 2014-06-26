@@ -2,6 +2,7 @@ package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.Hub.ServerSelector;
+import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.minecraft.server.v1_7_R2.World;
 
@@ -49,6 +50,10 @@ public class HubCommand implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("spawnpoint")) {
 				Location l = p.getLocation();
 				p.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+			}
+			
+			if (args[0].equalsIgnoreCase("gunmode")) {
+				Kit.toggleGunMode();
 			}
 		}
 		return false;
