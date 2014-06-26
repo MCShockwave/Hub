@@ -5,7 +5,6 @@ import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.PetCommand.MCSPet;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
-import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
@@ -26,6 +25,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -425,7 +425,9 @@ public class DefaultListener implements Listener {
 	public static HashMap<Player, SchedulerUtils>	turretTask	= new HashMap<>();
 
 	public boolean isInTube(Location l) {
-		return l.getX() < 3 && l.getZ() < 3 && l.getX() > -3 && l.getZ() > -3;
+		return false;
+		// return l.getX() < 3 && l.getZ() < 3 && l.getX() > -3 && l.getZ() >
+		// -3;
 	}
 
 	@EventHandler
@@ -440,13 +442,16 @@ public class DefaultListener implements Listener {
 				return;
 			}
 
-			if (b.getType() != Material.AIR && b.getType() != Material.BEACON
-					|| b.getRelative(BlockFace.UP).getType() != Material.AIR || !isInArena(p)
-					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8
-					|| isInTube(b.getLocation())) {
-				p.sendMessage("§cInvalid healer location");
-				return;
-			}
+			// if (b.getType() != Material.AIR && b.getType() != Material.BEACON
+			// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
+			// !isInArena(p)
+			// ||
+			// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
+			// < 8 * 8
+			// || isInTube(b.getLocation())) {
+			// p.sendMessage("§cInvalid healer location");
+			// return;
+			// }
 
 			p.getInventory().remove(Material.BEACON);
 
@@ -524,13 +529,17 @@ public class DefaultListener implements Listener {
 				return;
 			}
 
-			if (b.getType() != Material.AIR && b.getType() != Material.DISPENSER
-					|| b.getRelative(BlockFace.UP).getType() != Material.AIR || !isInArena(p)
-					|| b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld())) < 8 * 8
-					|| isInTube(b.getLocation())) {
-				p.sendMessage("§cInvalid turret location");
-				return;
-			}
+			// if (b.getType() != Material.AIR && b.getType() !=
+			// Material.DISPENSER
+			// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
+			// !isInArena(p)
+			// ||
+			// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
+			// < 8 * 8
+			// || isInTube(b.getLocation())) {
+			// p.sendMessage("§cInvalid turret location");
+			// return;
+			// }
 
 			p.getInventory().remove(Material.DISPENSER);
 
@@ -860,8 +869,12 @@ public class DefaultListener implements Listener {
 			return false;
 		}
 
-		int rad = 50;
-		return e.getLocation().distanceSquared(PVPCommand.arenaPVP(e.getWorld())) < rad * rad;
+		return e.getWorld().getEnvironment() == Environment.THE_END;
+
+		// int rad = 50;
+		// return
+		// e.getLocation().distanceSquared(PVPCommand.arenaPVP(e.getWorld())) <
+		// rad * rad;
 	}
 
 	@EventHandler
@@ -899,10 +912,10 @@ public class DefaultListener implements Listener {
 			PacketUtils.playParticleEffect(ParticleEffect.FLAME, p.getLocation(), 0.3f, 0.05f, 3);
 		}
 
-		if (rand.nextInt(10000) == 0 && isInArena(p)) {
-			RandomEvent.startRandom();
-		}
-		
+		// if (rand.nextInt(10000) == 0 && isInArena(p)) {
+		// RandomEvent.startRandom();
+		// }
+
 		if (event.getTo().getY() <= 0) {
 			p.teleport(p.getWorld().getSpawnLocation().add(0, 5, 0));
 		}
@@ -982,7 +995,7 @@ public class DefaultListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player p = event.getPlayer();
 		if (isInArena(p)) {
-			event.setRespawnLocation(PVPCommand.vecToLoc(HubPlugin.dW()));
+			event.setRespawnLocation(HubPlugin.dW().getSpawnLocation());
 			resetPlayerInv(p);
 			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 				public void run() {

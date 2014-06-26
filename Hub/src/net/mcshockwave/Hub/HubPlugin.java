@@ -7,12 +7,9 @@ import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.PetCommand;
 import net.mcshockwave.Hub.Commands.SpawnCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
-import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
-import net.mcshockwave.MCS.Utils.CustomSignUtils.CustomSign;
-import net.mcshockwave.MCS.Utils.CustomSignUtils.SignRunnable;
 import net.minecraft.server.v1_7_R2.EntityVillager;
 import net.minecraft.server.v1_7_R2.WorldServer;
 
@@ -22,14 +19,12 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager.Profession;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -88,25 +83,26 @@ public class HubPlugin extends JavaPlugin {
 			}
 		}, 100l);
 
-		regSigns();
+		// regSigns();
 	}
 
-	public static void regSigns() {
-		for (Kit k : Kit.values()) {
-			final Kit k2 = k;
-			new CustomSign("§2Kit:", k.name().replace('_', ' '), "§8Click to", "§8Use", "[Kit]", k.name(), null, null)
-					.onClick(new SignRunnable() {
-						public void run(Player p, Sign s, PlayerInteractEvent event) {
-							p.teleport(PVPCommand.arena(dW()));
-							p.sendMessage("§aEntering arena");
-
-							k2.use(p);
-
-							petApi.removePet(p, false, false);
-						}
-					});
-		}
-	}
+	// public static void regSigns() {
+	// for (Kit k : Kit.values()) {
+	// final Kit k2 = k;
+	// new CustomSign("§2Kit:", k.name().replace('_', ' '), "§8Click to",
+	// "§8Use", "[Kit]", k.name(), null, null)
+	// .onClick(new SignRunnable() {
+	// public void run(Player p, Sign s, PlayerInteractEvent event) {
+	// p.teleport(PVPCommand.arena(dW()));
+	// p.sendMessage("§aEntering arena");
+	//
+	// k2.use(p);
+	//
+	// petApi.removePet(p, false, false);
+	// }
+	// });
+	// }
+	// }
 
 	public static void setVils() {
 		for (Entity e : dW().getEntities()) {
@@ -156,6 +152,10 @@ public class HubPlugin extends JavaPlugin {
 				it.remove();
 			}
 		}
+	}
+
+	public static World endWorld() {
+		return Bukkit.getWorld(dW().getName() + "_the_end");
 	}
 
 	// public static void addPoints(Player p, int amount) {

@@ -1,19 +1,22 @@
 package net.mcshockwave.Hub.Kit;
 
 import net.mcshockwave.Hub.HubPlugin;
-import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.MCS.Menu.ItemMenu;
 import net.mcshockwave.MCS.Menu.ItemMenu.Button;
 import net.mcshockwave.MCS.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 public enum Kit {
 
@@ -87,7 +90,7 @@ public enum Kit {
 		acontents = new ItemStack[] { b, l, c, h };
 		contents = items;
 	}
-	
+
 	public ItemStack getIcon() {
 		if (contents.length > 1 && contents[1].getAmount() == 1) {
 			return contents[1];
@@ -102,12 +105,13 @@ public enum Kit {
 		for (int i = 0; i < le; i++) {
 			final Kit k = values()[i];
 
-			Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a"
-					+ k.name(), "Click to use");
+			Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a" + k.name(),
+					"Click to use");
 			m.addButton(b, i);
 			b.setOnClick(new ButtonRunnable() {
 				public void run(Player p, InventoryClickEvent event) {
-					p.teleport(PVPCommand.arena(HubPlugin.dW()));
+					// p.teleport(PVPCommand.arena(HubPlugin.dW()));
+					p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
 					p.sendMessage("§aEntering arena with kit " + k.name());
 
 					k.use(p);
@@ -153,6 +157,26 @@ public enum Kit {
 		for (PotionEffect pe : p.getActivePotionEffects()) {
 			p.removePotionEffect(pe.getType());
 		}
+	}
+
+	static Random	rand	= new Random();
+
+	public static Location getRandomLocation(int rad, World w) {
+		boolean done = false;
+		int tries = 1000;
+		while (!done && tries > 0) {
+			int x = rand.nextInt(rad * 2) - rad;
+			int z = rand.nextInt(rad * 2) - rad;
+			int y = w.getHighestBlockYAt(x, z);
+			Location l = new Location(w, x, y - 1, z);
+			if (l.getBlock().getType() != Material.ENDER_STONE) {
+				tries--;
+				continue;
+			}
+
+			return l.add(0, 2, 0);
+		}
+		return w.getSpawnLocation();
 	}
 
 	public static ItemStack i(Material m) {
