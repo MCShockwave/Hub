@@ -179,7 +179,7 @@ public enum Kit {
 		HubPlugin.petApi.removePet(p, false, true);
 	}
 
-	private static Category	gunCategory	= Category.Wasteland;
+	private static Category	gunCategory	= Category.Wasted;
 
 	private static String[]	materials	= { "LEATHER", "CHAINMAIL", "IRON" };
 
