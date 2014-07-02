@@ -392,7 +392,7 @@ public enum RandomEvent implements Listener {
 	public static void sendToArena(String s) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (DefaultListener.isInArena(p)) {
-				p.sendMessage("§7[§e§lPVP§7] [§cEvent§7]§f " + s);
+				p.sendMessage("Â§7[Â§eÂ§lPVPÂ§7] [Â§cEventÂ§7]Â§f " + s);
 			}
 		}
 	}

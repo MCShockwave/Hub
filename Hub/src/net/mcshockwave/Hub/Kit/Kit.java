@@ -117,14 +117,14 @@ public enum Kit {
 			for (int i = 0; i < le; i++) {
 				final Kit k = values()[i];
 
-				Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - �a"
+				Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a"
 						+ k.name(), "Click to use");
 				m.addButton(b, i);
 				b.setOnClick(new ButtonRunnable() {
 					public void run(Player p, InventoryClickEvent event) {
 						// p.teleport(PVPCommand.arena(HubPlugin.dW()));
 						p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
-						p.sendMessage("�aEntering arena with kit " + k.name());
+						p.sendMessage("§aEntering arena with kit " + k.name());
 
 						k.use(p);
 					}
@@ -138,7 +138,7 @@ public enum Kit {
 			enter.setOnClick(new ButtonRunnable() {
 				public void run(Player p, InventoryClickEvent event) {
 					p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
-					p.sendMessage("�aEntering arena (Gun mode)");
+					p.sendMessage("§aEntering arena (Gun mode)");
 
 					giveGunKit(p);
 				}
