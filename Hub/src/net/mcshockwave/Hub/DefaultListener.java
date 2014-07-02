@@ -2,7 +2,6 @@ package net.mcshockwave.Hub;
 
 import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
-import net.mcshockwave.Hub.Commands.PetCommand.MCSPet;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.MCS.MCShockwave;
@@ -35,7 +34,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Ocelot.Type;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Villager;
@@ -75,10 +73,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
-
-import com.dsh105.echopet.api.pet.type.OcelotPet;
-import com.dsh105.echopet.compat.api.entity.IPet;
-import com.dsh105.echopet.compat.api.entity.PetType;
 
 public class DefaultListener implements Listener {
 
@@ -716,29 +710,9 @@ public class DefaultListener implements Listener {
 			// }
 			if (i.getName().equalsIgnoreCase("Pets")) {
 				event.setCancelled(true);
-				if (cu.getType() == Material.STICK) {
-					if (HubPlugin.petApi.hasPet(p)) {
-						HubPlugin.petApi.removePet(p, true, true);
-					}
-					p.closeInventory();
-					return;
-				}
-				MCSPet pet = null;
-				for (MCSPet pet2 : MCSPet.values()) {
-					if (pet2.name().equalsIgnoreCase(
-							ChatColor.stripColor(ItemMetaUtils.getItemName(cu).replace(' ', '_')))) {
-						pet = pet2;
-					}
-				}
-				if (pet != null) {
-					IPet lp = HubPlugin.petApi.givePet(p, pet.t, true);
-					lp.setPetName(p.getName() + "'s " + pet.name().replace('_', ' '));
-					if (lp.getPetType() == PetType.OCELOT) {
-						OcelotPet op = (OcelotPet) lp;
-						op.setCatType(Type.BLACK_CAT);
-					}
-				}
+				// TODO add pets using PetMaker.java
 				p.closeInventory();
+				cu.clone(); // unused
 			}
 			// if (i.getName().startsWith(ChatColor.DARK_BLUE + "Exchanging "))
 			// {

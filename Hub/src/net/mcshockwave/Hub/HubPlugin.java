@@ -30,13 +30,9 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-import com.dsh105.echopet.api.EchoPetAPI;
-
 public class HubPlugin extends JavaPlugin {
 
 	public static HubPlugin			ins		= null;
-
-	public static EchoPetAPI		petApi	= null;
 
 	// public static final Vector[] vLocs = { new Vector(-196.5, 112, 171.5),
 	// new Vector(-188.5, 112, 163.5),
@@ -72,8 +68,6 @@ public class HubPlugin extends JavaPlugin {
 			// setSpeed(p);
 		}
 
-		petApi = EchoPetAPI.getAPI();
-
 		CustomEntityRegistrar.addCustomEntity("Villager", EntityType.VILLAGER, EntityVillager.class,
 				ServerSelector.class);
 
@@ -89,12 +83,12 @@ public class HubPlugin extends JavaPlugin {
 	// public static void regSigns() {
 	// for (Kit k : Kit.values()) {
 	// final Kit k2 = k;
-	// new CustomSign("§2Kit:", k.name().replace('_', ' '), "§8Click to",
-	// "§8Use", "[Kit]", k.name(), null, null)
+	// new CustomSign("ï¿½2Kit:", k.name().replace('_', ' '), "ï¿½8Click to",
+	// "ï¿½8Use", "[Kit]", k.name(), null, null)
 	// .onClick(new SignRunnable() {
 	// public void run(Player p, Sign s, PlayerInteractEvent event) {
 	// p.teleport(PVPCommand.arena(dW()));
-	// p.sendMessage("§aEntering arena");
+	// p.sendMessage("ï¿½aEntering arena");
 	//
 	// k2.use(p);
 	//

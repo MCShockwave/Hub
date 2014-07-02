@@ -175,8 +175,6 @@ public enum Kit {
 		if (this == Archer) {
 			p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
 		}
-
-		HubPlugin.petApi.removePet(p, false, true);
 	}
 
 	private static Category	gunCategory	= Category.Wasted;
