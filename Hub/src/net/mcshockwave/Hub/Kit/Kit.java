@@ -117,14 +117,14 @@ public enum Kit {
 			for (int i = 0; i < le; i++) {
 				final Kit k = values()[i];
 
-				Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - §a"
+				Button b = new Button(true, k.getIcon().getType(), 1, k.getIcon().getDurability(), "Kit - ï¿½a"
 						+ k.name(), "Click to use");
 				m.addButton(b, i);
 				b.setOnClick(new ButtonRunnable() {
 					public void run(Player p, InventoryClickEvent event) {
 						// p.teleport(PVPCommand.arena(HubPlugin.dW()));
 						p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
-						p.sendMessage("§aEntering arena with kit " + k.name());
+						p.sendMessage("ï¿½aEntering arena with kit " + k.name());
 
 						k.use(p);
 					}
@@ -138,7 +138,7 @@ public enum Kit {
 			enter.setOnClick(new ButtonRunnable() {
 				public void run(Player p, InventoryClickEvent event) {
 					p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
-					p.sendMessage("§aEntering arena (Gun mode)");
+					p.sendMessage("ï¿½aEntering arena (Gun mode)");
 
 					giveGunKit(p);
 				}
@@ -226,7 +226,7 @@ public enum Kit {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (DefaultListener.isInArena(p)) {
 				p.damage(p.getMaxHealth());
-				p.sendMessage("§7[§e§lPVP§7] §fToggling gun mode (Now " + gunmode + ")");
+				p.sendMessage("Â§7[Â§eÂ§lPVPÂ§eÂ§l] Â§fToggling gun mode (Now " + gunmode + ")");
 			}
 		}
 	}
