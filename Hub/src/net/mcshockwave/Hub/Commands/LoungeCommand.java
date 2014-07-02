@@ -24,7 +24,7 @@ public class LoungeCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			if (SQLTable.hasRank(p.getName(), Rank.DIAMOND)) {
 				if (DefaultListener.isInArena(p)) {
-					p.sendMessage("§c/lounge is disabled in the PVP arena");
+					p.sendMessage("Â§c/lounge is disabled in the PVP arena");
 					return false;
 				}
 				DefaultListener.resetPlayerInv(p);

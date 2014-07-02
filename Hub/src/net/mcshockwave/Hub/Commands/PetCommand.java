@@ -30,7 +30,7 @@ public class PetCommand implements CommandExecutor {
 			// && ItemsUtils.hasItem(p.getName(), SQLTable.MiscItems, pe.tc)) {
 			// i.addItem(ItemMetaUtils.setLore(
 			// ItemMetaUtils.setItemName(new ItemStack(Material.MONSTER_EGG),
-			// "�r" + pe.name().replace('_', ' ')),
+			// "§r" + pe.name().replace('_', ' ')),
 			// "",
 			// "Unlocked by "
 			// + (pe.r != null ? "having "

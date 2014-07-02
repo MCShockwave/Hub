@@ -83,12 +83,12 @@ public class HubPlugin extends JavaPlugin {
 	// public static void regSigns() {
 	// for (Kit k : Kit.values()) {
 	// final Kit k2 = k;
-	// new CustomSign("�2Kit:", k.name().replace('_', ' '), "�8Click to",
-	// "�8Use", "[Kit]", k.name(), null, null)
+	// new CustomSign("§2Kit:", k.name().replace('_', ' '), "§8Click to",
+	// "§8Use", "[Kit]", k.name(), null, null)
 	// .onClick(new SignRunnable() {
 	// public void run(Player p, Sign s, PlayerInteractEvent event) {
 	// p.teleport(PVPCommand.arena(dW()));
-	// p.sendMessage("�aEntering arena");
+	// p.sendMessage("§aEntering arena");
 	//
 	// k2.use(p);
 	//

@@ -24,12 +24,12 @@ public class PVPCommand implements CommandExecutor {
 			Player p = (Player) sender;
 
 			if (!isEnabled()) {
-				p.sendMessage("§c/pvp is disabled");
+				p.sendMessage("Â§c/pvp is disabled");
 				return false;
 			}
 
 			if (DefaultListener.isInArena(p)) {
-				p.sendMessage("§c/pvp is disabled in the PVP arena");
+				p.sendMessage("Â§c/pvp is disabled in the PVP arena");
 				return false;
 			}
 
@@ -37,7 +37,7 @@ public class PVPCommand implements CommandExecutor {
 			// p.sendMessage(ChatColor.AQUA + "Teleported to the PVP Arena");
 			DefaultListener.resetPlayerInv(p);
 			p.getInventory().setItem(8,
-					ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Kit Selector §e(Right click)"));
+					ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Kit Selector Â§e(Right click)"));
 		}
 		return false;
 	}
