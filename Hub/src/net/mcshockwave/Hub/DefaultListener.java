@@ -601,7 +601,9 @@ public class DefaultListener implements Listener {
 			sc.add(300);
 			sc.add(new Runnable() {
 				public void run() {
-					p.getInventory().addItem(new ItemStack(Material.DISPENSER));
+					if (p.getWorld().getEnvironment() == Environment.THE_END) {
+						p.getInventory().addItem(new ItemStack(Material.DISPENSER));
+					}
 					turretTask.remove(p);
 				}
 			});
