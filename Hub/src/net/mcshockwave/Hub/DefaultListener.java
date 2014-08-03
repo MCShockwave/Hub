@@ -15,6 +15,7 @@ import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 import net.mcshockwave.MCS.Utils.LocUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils.ParticleEffect;
+import net.mcshockwave.MCS.Utils.PetMaker;
 import net.mcshockwave.MCS.Utils.SchedulerUtils;
 
 import org.bukkit.Bukkit;
@@ -73,6 +74,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
+
+import org.apache.commons.lang.WordUtils;
 
 public class DefaultListener implements Listener {
 
@@ -81,6 +85,8 @@ public class DefaultListener implements Listener {
 	public DefaultListener(HubPlugin instance) {
 		plugin = instance;
 	}
+	
+	public static HashMap<UUID, LivingEntity> pets = new HashMap<>();
 
 	Random				rand	= new Random();
 
@@ -107,6 +113,11 @@ public class DefaultListener implements Listener {
 		}
 		if (!SQLTable.MynerimItems.has("Username", p.getName())) {
 			SQLTable.MynerimItems.add("Username", p.getName(), "Extra_Shout", "0");
+		}
+		
+		if (pets.containsKey(p.getUniqueId())) {
+			pets.get(p.getUniqueId()).remove();
+			pets.remove(p.getUniqueId());
 		}
 	}
 
@@ -647,6 +658,7 @@ public class DefaultListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Inventory i = event.getInventory();
@@ -659,119 +671,25 @@ public class DefaultListener implements Listener {
 				event.setCancelled(true);
 			}
 
-			// if (i.getName().equalsIgnoreCase(ChatColor.DARK_BLUE +
-			// "Coins Exchanger")) {
-			// event.setCancelled(true);
-			// Currency c =
-			// Currency.valueOf(ChatColor.stripColor(ItemMetaUtils.getItemName(cu)).replace(' ',
-			// '_'));
-			// if (c != null) {
-			// final Inventory i2 = Bukkit.createInventory(null, 18,
-			// ChatColor.DARK_BLUE + "Exchanging "
-			// + c.name().replace('_', ' '));
-			// String[] ratio = c.ratio.split(":");
-			// int startCu = Integer.parseInt(ratio[0]);
-			// int startCo = Integer.parseInt(ratio[1]);
-			// int amount = 1;
-			// for (int x = 0; x < 5; x++) {
-			// i2.setItem(
-			// x,
-			// ItemMetaUtils.setItemName(new ItemStack(c.icon), ChatColor.GOLD +
-			// ""
-			// + (startCu * amount) + " " + c.name().replace('_', ' ') + " --> "
-			// + (startCo * amount) + " Coins"));
-			// amount *= 10;
-			// }
-			// amount = 1;
-			// for (int x = 0; x < 5; x++) {
-			// i2.setItem(
-			// x + 9,
-			// ItemMetaUtils.setItemName(new ItemStack(c.icon), ChatColor.GOLD +
-			// ""
-			// + (startCo * amount) + " Coins" + " --> " + (startCu * amount) +
-			// " "
-			// + c.name().replace('_', ' ')));
-			// amount *= 10;
-			// }
-			// i2.setItem(i2.getSize() - 1, ItemMetaUtils.setItemName(
-			// ItemMetaUtils.setLore(
-			// new ItemStack(Material.GOLD_INGOT),
-			// ChatColor.GREEN + "Coins: "
-			// + SQLTable.Coins.getInt("Username", p.getName(), "Amount"),
-			// ChatColor.RED + c.name().replace('_', ' ') + ": "
-			// + c.table.getInt("Username", p.getName(), c.column)),
-			// ChatColor.AQUA
-			// + "Current Currencies:"));
-			// p.closeInventory();
-			// Bukkit.getScheduler().runTask(plugin, new Runnable() {
-			// public void run() {
-			// p.openInventory(i2);
-			// }
-			// });
-			// }
-			// }
 			if (i.getName().equalsIgnoreCase("Pets")) {
+				EntityType petType = EntityType.fromId(cu.getDurability());
+				
+				if (pets.containsKey(p.getUniqueId())) {
+					pets.get(p.getUniqueId()).remove();
+					pets.remove(p.getUniqueId());
+				}
+
+				LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), petType);
+				pet.setCustomNameVisible(true);
+				pet.setCustomName(p.getName() + (p.getName().endsWith("s") ? "'" : "'s") + " "
+						+ WordUtils.capitalizeFully(petType.name().replace('_', ' ')));
+				PetMaker.makePet(pet, p.getUniqueId());
+				
+				pets.put(p.getUniqueId(), pet);
+
 				event.setCancelled(true);
-				// TODO add pets using PetMaker.java
 				p.closeInventory();
-				cu.clone(); // unused
 			}
-			// if (i.getName().startsWith(ChatColor.DARK_BLUE + "Exchanging "))
-			// {
-			// event.setCancelled(true);
-			// String[] stuff =
-			// ChatColor.stripColor(ItemMetaUtils.getItemName(cu)).split(" --> ");
-			// if (stuff.length < 2) {
-			// return;
-			// }
-			// Currency from = null, to = null;
-			// int f, t;
-			// for (Currency c : Currency.values()) {
-			// if (stuff[0].contains(" " + c.name().replace('_', ' '))) {
-			// from = c;
-			// }
-			// if (stuff[1].contains(" " + c.name().replace('_', ' '))) {
-			// to = c;
-			// }
-			// }
-			// if (from != null && to != null) {
-			// f = Integer.parseInt(stuff[0].replace(" " +
-			// from.name().replace('_', ' '), ""));
-			// t = Integer.parseInt(stuff[1].replace(" " +
-			// to.name().replace('_', ' '), ""));
-			//
-			// int curF = from.table.getInt("Username", p.getName(),
-			// from.column);
-			// int curT = to.table.getInt("Username", p.getName(), to.column);
-			//
-			// if (curF >= f) {
-			// curF -= f;
-			// curT += t;
-			//
-			// from.table.set(from.column, curF + "", "Username", p.getName());
-			// to.table.set(to.column, curT + "", "Username", p.getName());
-			//
-			// p.sendMessage(ChatColor.GREEN + "Exchange Successful!");
-			//
-			// Currency c = (from == Currency.Coins ? to : from);
-			//
-			// i.setItem(i.getSize() - 1, ItemMetaUtils.setItemName(
-			// ItemMetaUtils.setLore(
-			// new ItemStack(Material.GOLD_INGOT),
-			// ChatColor.GREEN + "Coins: "
-			// + SQLTable.Coins.getInt("Username", p.getName(), "Amount"),
-			// ChatColor.RED + c.name().replace('_', ' ') + ": "
-			// + c.table.getInt("Username", p.getName(), c.column)),
-			// ChatColor.AQUA
-			// + "Current Currencies:"));
-			//
-			// Bukkit.getScoreboardManager().getMainScoreboard().getObjective("Coins").getScore(p)
-			// .setScore(SQLTable.Coins.getInt("Username", p.getName(),
-			// "Amount"));
-			// MCShockwave.updateTab(p);
-			// }
-			// }
-			// }
 		}
 	}
 
