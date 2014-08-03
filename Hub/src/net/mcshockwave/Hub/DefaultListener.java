@@ -35,6 +35,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Ocelot.Type;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Villager;
@@ -85,12 +87,12 @@ public class DefaultListener implements Listener {
 	public DefaultListener(HubPlugin instance) {
 		plugin = instance;
 	}
-	
-	public static HashMap<UUID, LivingEntity> pets = new HashMap<>();
 
-	Random				rand	= new Random();
+	public static HashMap<UUID, LivingEntity>	pets	= new HashMap<>();
 
-	ArrayList<Player>	froz	= new ArrayList<Player>();
+	Random										rand	= new Random();
+
+	ArrayList<Player>							froz	= new ArrayList<Player>();
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -114,7 +116,7 @@ public class DefaultListener implements Listener {
 		if (!SQLTable.MynerimItems.has("Username", p.getName())) {
 			SQLTable.MynerimItems.add("Username", p.getName(), "Extra_Shout", "0");
 		}
-		
+
 		if (pets.containsKey(p.getUniqueId())) {
 			pets.get(p.getUniqueId()).remove();
 			pets.remove(p.getUniqueId());
@@ -673,19 +675,25 @@ public class DefaultListener implements Listener {
 
 			if (i.getName().equalsIgnoreCase("Pets")) {
 				EntityType petType = EntityType.fromId(cu.getDurability());
-				
+
 				if (pets.containsKey(p.getUniqueId())) {
 					pets.get(p.getUniqueId()).remove();
 					pets.remove(p.getUniqueId());
 				}
 
-				LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), petType);
-				pet.setCustomNameVisible(true);
-				pet.setCustomName(p.getName() + (p.getName().endsWith("s") ? "'" : "'s") + " "
-						+ WordUtils.capitalizeFully(petType.name().replace('_', ' ')));
-				PetMaker.makePet(pet, p.getUniqueId());
-				
-				pets.put(p.getUniqueId(), pet);
+				if (petType != null) {
+					LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), petType);
+					pet.setCustomNameVisible(true);
+					pet.setCustomName(p.getName() + (p.getName().endsWith("s") ? "'" : "'s") + " "
+							+ (petType == EntityType.OCELOT ? "Cat" : WordUtils.capitalizeFully(petType.name().replace('_', ' '))));
+					PetMaker.makePet(pet, p.getUniqueId());
+					
+					if (pet instanceof Ocelot) {
+						((Ocelot) pet).setCatType(Type.BLACK_CAT);
+					}
+
+					pets.put(p.getUniqueId(), pet);
+				}
 
 				event.setCancelled(true);
 				p.closeInventory();
@@ -711,7 +719,7 @@ public class DefaultListener implements Listener {
 				resetDurability((Player) event.getEntity());
 			}
 		}
-		
+
 		if (pets.containsValue(event.getEntity())) {
 			event.setCancelled(true);
 		}
