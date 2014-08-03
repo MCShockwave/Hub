@@ -173,7 +173,7 @@ public class DefaultListener implements Listener {
 				if (s.getLine(0).equalsIgnoreCase("You win!") && s.getLine(1).equalsIgnoreCase("Click here to")
 						&& s.getLine(2).equalsIgnoreCase("get your reward")) {
 					String[] l3 = s.getLine(3).replace("[", "").replace("]", "").split(" ");
-					PointsUtils.addPoints(p, Integer.parseInt(l3[0]), "beating the Hub parkour!", false);
+					PointsUtils.addPoints(p, Integer.parseInt(l3[0]), "beating the Hub parkour!");
 					p.teleport(p.getWorld().getSpawnLocation());
 				}
 			}
