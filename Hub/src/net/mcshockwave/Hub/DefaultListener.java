@@ -711,6 +711,10 @@ public class DefaultListener implements Listener {
 				resetDurability((Player) event.getEntity());
 			}
 		}
+		
+		if (pets.containsValue(event.getEntity())) {
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler

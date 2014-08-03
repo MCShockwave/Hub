@@ -21,6 +21,7 @@ import org.apache.commons.lang.WordUtils;
 
 public class PetCommand implements CommandExecutor {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
@@ -38,7 +39,7 @@ public class PetCommand implements CommandExecutor {
 						&& LevelUtils.getLevelFromXP(LevelUtils.getXP(p)) >= pe.l || pe.tc != null
 						&& ItemsUtils.hasItem(p.getName(), SQLTable.MiscItems, pe.tc)) {
 					i.addItem(ItemMetaUtils.setLore(
-							ItemMetaUtils.setItemName(new ItemStack(Material.MONSTER_EGG),
+							ItemMetaUtils.setItemName(new ItemStack(Material.MONSTER_EGG, 1, pe.t.getTypeId()),
 									"§r" + pe.name().replace('_', ' ')),
 							"",
 							"Unlocked by "

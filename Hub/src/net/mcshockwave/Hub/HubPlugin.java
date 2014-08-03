@@ -23,6 +23,7 @@ import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -145,6 +146,10 @@ public class HubPlugin extends JavaPlugin {
 			for (Item it : is) {
 				it.remove();
 			}
+		}
+		
+		for (LivingEntity le : DefaultListener.pets.values()) {
+			le.remove();
 		}
 	}
 
