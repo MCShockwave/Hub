@@ -51,6 +51,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -624,6 +625,13 @@ public class DefaultListener implements Listener {
 			sc.execute();
 
 			turretTask.put(p, sc);
+		}
+	}
+	
+	@EventHandler
+	public void onEntityTarget(EntityTargetEvent event) {
+		if (pets.containsValue(event.getEntity())) {
+			event.setTarget(null);
 		}
 	}
 

@@ -60,12 +60,12 @@ public class PetCommand implements CommandExecutor {
 		Witch(
 			Rank.ENDER,
 			EntityType.WITCH),
-		Blaze(
+		Skeleton(
 			Rank.NETHER,
-			EntityType.BLAZE),
-		Enderman(
+			EntityType.SKELETON),
+		Zombie(
 			Rank.OBSIDIAN,
-			EntityType.ENDERMAN),
+			EntityType.ZOMBIE),
 		Creeper(
 			Rank.EMERALD,
 			EntityType.CREEPER),
