@@ -1,11 +1,11 @@
 package net.mcshockwave.Hub;
 
-import org.bukkit.entity.Villager.Profession;
+import net.minecraft.server.v1_7_R4.EntityInsentient;
+import net.minecraft.server.v1_7_R4.EntityVillager;
+import net.minecraft.server.v1_7_R4.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_7_R4.World;
 
-import net.minecraft.server.v1_7_R2.EntityInsentient;
-import net.minecraft.server.v1_7_R2.EntityVillager;
-import net.minecraft.server.v1_7_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_7_R2.World;
+import org.bukkit.entity.Villager.Profession;
 
 public class ServerSelector extends EntityVillager {
 

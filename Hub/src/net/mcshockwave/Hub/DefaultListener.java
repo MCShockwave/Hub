@@ -921,7 +921,6 @@ public class DefaultListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void resetDurability(Player p) {
 		PlayerInventory pi = p.getInventory();
 

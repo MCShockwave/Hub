@@ -28,7 +28,7 @@ public class CoinsCommand implements CommandExecutor {
 				if (Bukkit.getPlayer(args[1]) != null) {
 					SQLTable.Coins.set("Amount", args[2], "Username", args[1]);
 					Bukkit.getScoreboardManager().getMainScoreboard().getObjective("Coins")
-							.getScore(Bukkit.getPlayer(args[1]))
+							.getScore(args[1])
 							.setScore(SQLTable.Coins.getInt("Username", args[1], "Amount"));
 				}
 			}

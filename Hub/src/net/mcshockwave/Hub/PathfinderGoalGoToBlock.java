@@ -1,8 +1,8 @@
 package net.mcshockwave.Hub;
 
-import net.minecraft.server.v1_7_R2.EntityCreature;
-import net.minecraft.server.v1_7_R2.PathfinderGoal;
-import net.minecraft.server.v1_7_R2.Vec3D;
+import net.minecraft.server.v1_7_R4.EntityCreature;
+import net.minecraft.server.v1_7_R4.PathfinderGoal;
+import net.minecraft.server.v1_7_R4.Vec3D;
 
 public class PathfinderGoalGoToBlock extends PathfinderGoal {
 

@@ -148,7 +148,6 @@ public enum Kit {
 		return m;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void use(Player p) {
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(acontents);
