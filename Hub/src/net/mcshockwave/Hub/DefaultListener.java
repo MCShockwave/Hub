@@ -443,191 +443,194 @@ public class DefaultListener implements Listener {
 		final Player p = event.getPlayer();
 		final Block b = event.getBlock();
 
-		if (b.getType() == Material.BEACON) {
-			event.setCancelled(true);
+		if (p.getGameMode() != GameMode.CREATIVE) {
+			if (b.getType() == Material.BEACON) {
+				event.setCancelled(true);
 
-			if (medic.containsKey(p)) {
-				return;
-			}
-
-			// if (b.getType() != Material.AIR && b.getType() != Material.BEACON
-			// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
-			// !isInArena(p)
-			// ||
-			// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
-			// < 8 * 8
-			// || isInTube(b.getLocation())) {
-			// p.sendMessage("§cInvalid healer location");
-			// return;
-			// }
-
-			p.getInventory().remove(Material.BEACON);
-
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				public void run() {
-					b.getRelative(BlockFace.UP).setType(Material.BEACON);
-					b.setType(Material.FENCE);
+				if (medic.containsKey(p)) {
+					return;
 				}
-			}, 2l);
 
-			medic.put(p, b.getRelative(BlockFace.UP));
+				// if (b.getType() != Material.AIR && b.getType() !=
+				// Material.BEACON
+				// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
+				// !isInArena(p)
+				// ||
+				// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
+				// < 8 * 8
+				// || isInTube(b.getLocation())) {
+				// p.sendMessage("§cInvalid healer location");
+				// return;
+				// }
 
-			final Location bl = b.getLocation().add(0.5, 1.5, 0.5);
+				p.getInventory().remove(Material.BEACON);
 
-			final int totalTicks = 600;
-			final int tickUpdate = 5;
-
-			final int minDis = 8;
-
-			SchedulerUtils sc = SchedulerUtils.getNew();
-
-			sc.add(p);
-			sc.add("§aPlaced healer");
-			for (int i = 0; i < totalTicks; i += tickUpdate) {
-				sc.add(new Runnable() {
+				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 					public void run() {
-						double disSq = p.getLocation().distanceSquared(bl);
-						if (disSq < minDis * minDis) {
-							Location pl = p.getEyeLocation().add(0, -1, 0);
-
-							Vector pv = new Vector(pl.getX(), pl.getY(), pl.getZ());
-							Vector bv = new Vector(bl.getX(), bl.getY(), bl.getZ());
-
-							Vector fv = bv.subtract(pv).multiply(0.1);
-
-							pl.add(fv);
-							for (int i = 0; i < 100; i++) {
-								pl.add(fv);
-								PacketUtils.playParticleEffect(ParticleEffect.HEART, pl, 0.05f, 1, 1);
-								if (pl.distanceSquared(bl) < 1) {
-									break;
-								}
-							}
-
-							p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 3));
-						}
+						b.getRelative(BlockFace.UP).setType(Material.BEACON);
+						b.setType(Material.FENCE);
 					}
-				});
-				sc.add(tickUpdate);
-			}
-			sc.add(new Runnable() {
-				public void run() {
-					medic.remove(p);
-					bl.getBlock().setType(Material.AIR);
-					bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
-				}
-			});
-			sc.add(200);
-			sc.add(new Runnable() {
-				public void run() {
-					p.getInventory().addItem(new ItemStack(Material.BEACON));
-					medicTask.remove(p);
-				}
-			});
+				}, 2l);
 
-			sc.execute();
+				medic.put(p, b.getRelative(BlockFace.UP));
 
-			medicTask.put(p, sc);
-		}
+				final Location bl = b.getLocation().add(0.5, 1.5, 0.5);
 
-		if (b.getType() == Material.DISPENSER) {
-			event.setCancelled(true);
+				final int totalTicks = 600;
+				final int tickUpdate = 5;
 
-			if (engineer.containsKey(p)) {
-				return;
-			}
+				final int minDis = 8;
 
-			// if (b.getType() != Material.AIR && b.getType() !=
-			// Material.DISPENSER
-			// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
-			// !isInArena(p)
-			// ||
-			// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
-			// < 8 * 8
-			// || isInTube(b.getLocation())) {
-			// p.sendMessage("§cInvalid turret location");
-			// return;
-			// }
+				SchedulerUtils sc = SchedulerUtils.getNew();
 
-			p.getInventory().remove(Material.DISPENSER);
-
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				public void run() {
-					b.getRelative(BlockFace.UP).setType(Material.DISPENSER);
-					b.setType(Material.FENCE);
-				}
-			}, 2l);
-
-			engineer.put(p, b.getRelative(BlockFace.UP));
-
-			final Location bl = b.getLocation().add(0.5, 1.5, 0.5);
-
-			final Item ne = bl.getWorld().dropItem(bl, new ItemStack(Material.ARROW));
-			ne.setPickupDelay(Integer.MAX_VALUE);
-			ne.remove();
-
-			final int totalTicks = 600;
-			final int tickUpdate = 20;
-
-			final int minDis = 8;
-
-			SchedulerUtils sc = SchedulerUtils.getNew();
-
-			sc.add(p);
-			sc.add("§aPlaced turret");
-			for (int i = 0; i < totalTicks; i += tickUpdate) {
-				sc.add(new Runnable() {
-					public void run() {
-						ne.teleport(bl);
-
-						for (Entity e : ne.getNearbyEntities(minDis, minDis, minDis)) {
-							if (e instanceof Player && e != p) {
-								Player p2 = (Player) e;
-
-								p2.getWorld().playSound(bl, Sound.SHOOT_ARROW, 1, 1);
-
-								Location pl = p2.getEyeLocation();
+				sc.add(p);
+				sc.add("§aPlaced healer");
+				for (int i = 0; i < totalTicks; i += tickUpdate) {
+					sc.add(new Runnable() {
+						public void run() {
+							double disSq = p.getLocation().distanceSquared(bl);
+							if (disSq < minDis * minDis) {
+								Location pl = p.getEyeLocation().add(0, -1, 0);
 
 								Vector pv = new Vector(pl.getX(), pl.getY(), pl.getZ());
 								Vector bv = new Vector(bl.getX(), bl.getY(), bl.getZ());
 
-								Vector fv = pv.subtract(bv);
+								Vector fv = bv.subtract(pv).multiply(0.1);
 
-								Arrow a = p2.getWorld().spawnArrow(bl.clone().add(fv.clone().multiply(0.3)),
-										fv.clone().add(new Vector(0, 0.1, 0)), 2f, 20f);
-								a.setShooter(p);
-								a.setMetadata("TurretArrow", new FixedMetadataValue(plugin, true));
+								pl.add(fv);
+								for (int i = 0; i < 100; i++) {
+									pl.add(fv);
+									PacketUtils.playParticleEffect(ParticleEffect.HEART, pl, 0.05f, 1, 1);
+									if (pl.distanceSquared(bl) < 1) {
+										break;
+									}
+								}
 
-								break;
+								p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 3));
 							}
 						}
+					});
+					sc.add(tickUpdate);
+				}
+				sc.add(new Runnable() {
+					public void run() {
+						medic.remove(p);
+						bl.getBlock().setType(Material.AIR);
+						bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
 					}
 				});
-				sc.add(tickUpdate);
-			}
-			sc.add(new Runnable() {
-				public void run() {
-					engineer.remove(p);
-					bl.getBlock().setType(Material.AIR);
-					bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
-				}
-			});
-			sc.add(300);
-			sc.add(new Runnable() {
-				public void run() {
-					if (p.getWorld().getEnvironment() == Environment.THE_END) {
-						p.getInventory().addItem(new ItemStack(Material.DISPENSER));
+				sc.add(200);
+				sc.add(new Runnable() {
+					public void run() {
+						p.getInventory().addItem(new ItemStack(Material.BEACON));
+						medicTask.remove(p);
 					}
-					turretTask.remove(p);
+				});
+
+				sc.execute();
+
+				medicTask.put(p, sc);
+			}
+
+			if (b.getType() == Material.DISPENSER) {
+				event.setCancelled(true);
+
+				if (engineer.containsKey(p)) {
+					return;
 				}
-			});
 
-			sc.execute();
+				// if (b.getType() != Material.AIR && b.getType() !=
+				// Material.DISPENSER
+				// || b.getRelative(BlockFace.UP).getType() != Material.AIR ||
+				// !isInArena(p)
+				// ||
+				// b.getLocation().distanceSquared(PVPCommand.arenaPVP(b.getWorld()))
+				// < 8 * 8
+				// || isInTube(b.getLocation())) {
+				// p.sendMessage("§cInvalid turret location");
+				// return;
+				// }
 
-			turretTask.put(p, sc);
+				p.getInventory().remove(Material.DISPENSER);
+
+				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+					public void run() {
+						b.getRelative(BlockFace.UP).setType(Material.DISPENSER);
+						b.setType(Material.FENCE);
+					}
+				}, 2l);
+
+				engineer.put(p, b.getRelative(BlockFace.UP));
+
+				final Location bl = b.getLocation().add(0.5, 1.5, 0.5);
+
+				final Item ne = bl.getWorld().dropItem(bl, new ItemStack(Material.ARROW));
+				ne.setPickupDelay(Integer.MAX_VALUE);
+				ne.remove();
+
+				final int totalTicks = 600;
+				final int tickUpdate = 20;
+
+				final int minDis = 8;
+
+				SchedulerUtils sc = SchedulerUtils.getNew();
+
+				sc.add(p);
+				sc.add("§aPlaced turret");
+				for (int i = 0; i < totalTicks; i += tickUpdate) {
+					sc.add(new Runnable() {
+						public void run() {
+							ne.teleport(bl);
+
+							for (Entity e : ne.getNearbyEntities(minDis, minDis, minDis)) {
+								if (e instanceof Player && e != p) {
+									Player p2 = (Player) e;
+
+									p2.getWorld().playSound(bl, Sound.SHOOT_ARROW, 1, 1);
+
+									Location pl = p2.getEyeLocation();
+
+									Vector pv = new Vector(pl.getX(), pl.getY(), pl.getZ());
+									Vector bv = new Vector(bl.getX(), bl.getY(), bl.getZ());
+
+									Vector fv = pv.subtract(bv);
+
+									Arrow a = p2.getWorld().spawnArrow(bl.clone().add(fv.clone().multiply(0.3)),
+											fv.clone().add(new Vector(0, 0.1, 0)), 2f, 20f);
+									a.setShooter(p);
+									a.setMetadata("TurretArrow", new FixedMetadataValue(plugin, true));
+
+									break;
+								}
+							}
+						}
+					});
+					sc.add(tickUpdate);
+				}
+				sc.add(new Runnable() {
+					public void run() {
+						engineer.remove(p);
+						bl.getBlock().setType(Material.AIR);
+						bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
+					}
+				});
+				sc.add(300);
+				sc.add(new Runnable() {
+					public void run() {
+						if (p.getWorld().getEnvironment() == Environment.THE_END) {
+							p.getInventory().addItem(new ItemStack(Material.DISPENSER));
+						}
+						turretTask.remove(p);
+					}
+				});
+
+				sc.execute();
+
+				turretTask.put(p, sc);
+			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (pets.containsValue(event.getEntity())) {
@@ -692,10 +695,13 @@ public class DefaultListener implements Listener {
 				if (petType != null) {
 					LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), petType);
 					pet.setCustomNameVisible(true);
-					pet.setCustomName(p.getName() + (p.getName().endsWith("s") ? "'" : "'s") + " "
-							+ (petType == EntityType.OCELOT ? "Cat" : WordUtils.capitalizeFully(petType.name().replace('_', ' '))));
+					pet.setCustomName(p.getName()
+							+ (p.getName().endsWith("s") ? "'" : "'s")
+							+ " "
+							+ (petType == EntityType.OCELOT ? "Cat" : WordUtils.capitalizeFully(petType.name().replace(
+									'_', ' '))));
 					PetMaker.makePet(pet, p.getUniqueId());
-					
+
 					if (pet instanceof Ocelot) {
 						((Ocelot) pet).setCatType(Type.BLACK_CAT);
 					}
