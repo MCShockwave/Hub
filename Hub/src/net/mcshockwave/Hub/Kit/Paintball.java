@@ -202,7 +202,7 @@ public class Paintball implements Listener {
 						boolean def = false;
 						for (Player p : getPlayers(grnBomb ? yellow : green)) {
 							if (p.getLocation().distanceSquared(bombPlanted.getLocation()) < 3 * 3) {
-								send("§6Defusing... (§e" + ((int) (((maxProg - plantProgress) / maxProg) * 100))
+								send("§6Defusing... (§e" + ((int) (((maxProg - --plantProgress) / maxProg) * 100))
 										+ "%§6)");
 								def = true;
 								if (plantProgress <= 0) {
