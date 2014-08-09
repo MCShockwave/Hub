@@ -4,10 +4,14 @@ import static net.mcshockwave.Hub.Kit.Paintball.GameState.NONE;
 import static net.mcshockwave.Hub.Kit.Paintball.GameState.QUEUED;
 import static net.mcshockwave.Hub.Kit.Paintball.GameState.STARTED;
 import net.mcshockwave.Guns.Gun;
+import net.mcshockwave.Guns.GunFireEvent;
 import net.mcshockwave.Guns.addons.Addon;
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.MCShockwave;
+import net.mcshockwave.MCS.Menu.ItemMenu;
+import net.mcshockwave.MCS.Menu.ItemMenu.Button;
+import net.mcshockwave.MCS.Menu.ItemMenu.ButtonRunnable;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils.ParticleEffect;
@@ -26,6 +30,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -38,12 +43,16 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+
+import org.apache.commons.lang.WordUtils;
 
 public class Paintball implements Listener {
 
-	public static String				cmdQueue	= "/queue";
+	public static String				cmdMenu		= "/paint";
 
 	public static ArrayList<Paintball>	games		= new ArrayList<>();
 
@@ -52,15 +61,6 @@ public class Paintball implements Listener {
 	public static int					defaultY	= 101;
 
 	public ArrayList<BukkitTask>		tasks		= new ArrayList<>();
-
-	public static Paintball getActiveQueue() {
-		for (Paintball pg : games) {
-			if (pg.state == QUEUED) {
-				return pg;
-			}
-		}
-		return null;
-	}
 
 	private Paintball() {
 	}
@@ -90,7 +90,7 @@ public class Paintball implements Listener {
 				.broadcastAll(MCShockwave.getBroadcastMessage(ChatColor.DARK_GREEN,
 						"A new game of %s has been queued!", "paintball"), MCShockwave.getBroadcastMessage(
 						ChatColor.RED, "Gamemode: %s   Max Players: %s", current.toString(), maxPlayers), MCShockwave
-						.getBroadcastMessage(ChatColor.DARK_AQUA, "Type %s to join!", cmdQueue));
+						.getBroadcastMessage(ChatColor.DARK_AQUA, "Type %s to join!", cmdMenu));
 		this.autoStart = autoStart;
 		state = QUEUED;
 	}
@@ -115,6 +115,17 @@ public class Paintball implements Listener {
 
 	public void start() {
 		state = STARTED;
+
+		for (Paintball pg : games) {
+			if (pg != this) {
+				for (Player p : getPlayers()) {
+					for (Player p2 : pg.getPlayers()) {
+						p.hidePlayer(p2);
+						p2.hidePlayer(p);
+					}
+				}
+			}
+		}
 
 		send("§6§lGame started!");
 
@@ -151,10 +162,8 @@ public class Paintball implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, HubPlugin.ins);
 
 		if (current == Minigame.Search_and_Destroy) {
-			grnBomb = rand.nextBoolean();
-
-			Player bmb = getPlayers(grnBomb ? green : yellow).get(
-					rand.nextInt(getPlayers(grnBomb ? green : yellow).size()));
+			Player bmb = getPlayers().get(rand.nextInt(getPlayers().size()));
+			grnBomb = green.contains(bmb.getName());
 			bmb.getInventory().addItem(new ItemStack(Material.TNT));
 
 			send(grnBomb ? "§a§lGreen team has the bomb! §a(" + bmb.getName() + ")"
@@ -167,7 +176,7 @@ public class Paintball implements Listener {
 							if (p.getInventory().contains(Material.TNT)) {
 								PacketUtils.playBlockDustParticles(Material.TNT, 0, p.getEyeLocation(), 0.3f, 0.1f);
 								if (p.getLocation().distanceSquared(getCenter()) < 3 * 3) {
-									int maxProg = 5;
+									double maxProg = 5;
 									if (++plantProgress >= maxProg) {
 										bombPlanted = HubPlugin.endWorld().dropItem(getCenter(),
 												new ItemStack(Material.TNT));
@@ -178,15 +187,14 @@ public class Paintball implements Listener {
 										break;
 									} else {
 										p.getWorld().playSound(p.getLocation(), Sound.WOOD_CLICK, 10, 0);
-										send("§6Planting... (Progress: §e" + plantProgress + " §6/§e " + maxProg
-												+ "§6)");
+										send("§6Planting... (§e" + ((int) ((plantProgress / maxProg) * 100)) + "%§6)");
 										break;
 									}
 								}
 							}
 						}
 					} else {
-						int maxProg = 45;
+						double maxProg = 45;
 						PacketUtils.playParticleEffect(ParticleEffect.FLAME, bombPlanted.getLocation(), 0, 0.05f, 10);
 						HubPlugin.endWorld().playSound(bombPlanted.getLocation(), Sound.CLICK, 10,
 								((float) plantProgress / (float) maxProg) + 1);
@@ -194,7 +202,8 @@ public class Paintball implements Listener {
 						boolean def = false;
 						for (Player p : getPlayers(grnBomb ? yellow : green)) {
 							if (p.getLocation().distanceSquared(bombPlanted.getLocation()) < 3 * 3) {
-								send("§6Defusing... (Left: §e" + plantProgress-- + "§6)");
+								send("§6Defusing... (§e" + ((int) (((maxProg - plantProgress) / maxProg) * 100))
+										+ "%§6)");
 								def = true;
 								if (plantProgress <= 0) {
 									MCShockwave.broadcast(grnBomb ? ChatColor.YELLOW : ChatColor.GREEN,
@@ -207,6 +216,7 @@ public class Paintball implements Listener {
 						}
 
 						if (!def) {
+							send("§6Timer: §e" + (int) (maxProg - (plantProgress + 1)));
 							if (++plantProgress >= maxProg) {
 								HubPlugin.endWorld().playSound(bombPlanted.getLocation(), Sound.EXPLODE, 10, 0);
 								MCShockwave.broadcast(grnBomb ? ChatColor.GREEN : ChatColor.YELLOW,
@@ -316,7 +326,7 @@ public class Paintball implements Listener {
 		}
 	}
 
-	public int		plantProgress	= 0;
+	public double		plantProgress	= 0;
 	public boolean	grnBomb			= false;
 	public Item		bombPlanted		= null;
 
@@ -342,6 +352,18 @@ public class Paintball implements Listener {
 			p.teleport(HubPlugin.dW().getSpawnLocation());
 			DefaultListener.resetPlayerInv(p);
 		}
+
+		for (Paintball pg : games) {
+			if (pg != this) {
+				for (Player p : getPlayers()) {
+					for (Player p2 : pg.getPlayers()) {
+						p.showPlayer(p2);
+						p2.showPlayer(p);
+					}
+				}
+			}
+		}
+
 		games.remove(this);
 
 		players.clear();
@@ -427,6 +449,20 @@ public class Paintball implements Listener {
 				respawn(p);
 			}
 		}.runTaskLater(HubPlugin.ins, 1);
+	}
+
+	@EventHandler
+	public void onGunFire(GunFireEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player shooter = (Player) event.getEntity();
+
+			if (players.contains(shooter.getName())) {
+				event.canSee().clear();
+				for (Player p : getPlayers()) {
+					event.canSee().add(p);
+				}
+			}
+		}
 	}
 
 	@EventHandler
@@ -583,9 +619,23 @@ public class Paintball implements Listener {
 	}
 
 	public static enum GameState {
-		NONE,
-		QUEUED,
-		STARTED;
+		NONE(
+			ChatColor.WHITE),
+		QUEUED(
+			ChatColor.LIGHT_PURPLE),
+		STARTED(
+			ChatColor.DARK_GREEN);
+
+		GameState(ChatColor color) {
+			this.color = color;
+		}
+
+		ChatColor	color;
+
+		@Override
+		public String toString() {
+			return color + WordUtils.capitalizeFully(name().replace('_', ' '));
+		}
 	}
 
 	public static Paintball getGame(String pl) {
@@ -614,7 +664,72 @@ public class Paintball implements Listener {
 	}
 
 	public static Location getCenter() {
-		return new Location(HubPlugin.endWorld(), 500.5, 104, 510.5, 0, 0);
+		return new Location(HubPlugin.endWorld(), 500.5, 105, 510.5, 0, 0);
+	}
+
+	public static ItemMenu getMenu() {
+		return getMenu(false);
+	}
+
+	public static ItemMenu getMenu(boolean editable) {
+		ItemMenu m = new ItemMenu("§3Active Games", games.size() <= 0 ? 1 : games.size());
+
+		int indx = -1;
+		for (final Paintball pg : games) {
+			indx++;
+			List<String> lore = new ArrayList<>();
+			lore.addAll(Arrays.asList("§c§o" + pg.current, "§6Max Players: §o" + pg.maxPlayers, pg.state.toString(),
+					"", "§7Players:"));
+			for (Player p : pg.getPlayers()) {
+				lore.add((pg.yellow.contains(p.getName()) ? "§e" : pg.green.contains(p.getName()) ? "§a" : "§8") + "§o"
+						+ p.getName());
+			}
+			Button b = new Button(false, Material.WOOL, 1, 0, "§eGame #" + (indx + 1), lore.toArray(new String[0]));
+			m.addButton(b, indx);
+
+			if (editable) {
+				m.addSubMenu(pg.getGameMenu(), b, true);
+			} else {
+				b.setOnClick(new ButtonRunnable() {
+					public void run(Player p, InventoryClickEvent event) {
+						if (pg.state == QUEUED) {
+							pg.addToQueue(p.getName());
+						} else if (pg.state == STARTED) {
+							p.sendMessage("§cGame already started!");
+						}
+					}
+				});
+			}
+		}
+
+		return m;
+	}
+
+	public ItemMenu getGameMenu() {
+		ItemMenu m = new ItemMenu("§3Game #" + (games.indexOf(this) + 1), 9);
+
+		Button del = new Button(true, Material.WOOL, 1, 14, "§cDelete Game");
+		del.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				if (Paintball.this.state == STARTED) {
+					Paintball.this.end();
+				}
+				games.remove(Paintball.this);
+			}
+		});
+		m.addButton(del, 6);
+
+		Button start = new Button(true, Material.WOOL, 1, 5, "§aStart Game");
+		start.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				if (Paintball.this.state == QUEUED) {
+					Paintball.this.start();
+				}
+			}
+		});
+		m.addButton(start, 1);
+
+		return m;
 	}
 
 }

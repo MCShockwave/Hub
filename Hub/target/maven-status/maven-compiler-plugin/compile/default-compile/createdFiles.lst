@@ -41,6 +41,7 @@ net\mcshockwave\Hub\Kit\RandomEvent$11.class
 net\mcshockwave\Hub\Commands\PetCommand$MCSPet.class
 net\mcshockwave\Hub\Kit\RandomEvent$1$1.class
 net\mcshockwave\Hub\Kit\Paintball$3.class
+net\mcshockwave\Hub\Kit\Paintball$7.class
 net\mcshockwave\Hub\Commands\PetCommand.class
 net\mcshockwave\Hub\DefaultListener$13.class
 net\mcshockwave\Hub\DefaultListener.class
@@ -61,5 +62,7 @@ net\mcshockwave\Hub\Commands\HubCommand.class
 net\mcshockwave\Hub\PathfinderGoalGoToBlock.class
 net\mcshockwave\Hub\Kit\Paintball$5.class
 net\mcshockwave\Hub\DefaultListener$10.class
+net\mcshockwave\Hub\Kit\Paintball$8.class
 net\mcshockwave\Hub\DefaultListener$24.class
+net\mcshockwave\Hub\Kit\Paintball$9.class
 net\mcshockwave\Hub\DefaultListener$7.class

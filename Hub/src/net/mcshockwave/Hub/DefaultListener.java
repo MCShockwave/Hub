@@ -430,10 +430,8 @@ public class DefaultListener implements Listener {
 		String[] args = msg.split(" ");
 		String cmd = args[0].toLowerCase();
 
-		if (cmd.equalsIgnoreCase(Paintball.cmdQueue)) {
-			if (Paintball.getActiveQueue() != null) {
-				Paintball.getActiveQueue().addToQueue(p.getName());
-			}
+		if (cmd.equalsIgnoreCase(Paintball.cmdMenu)) {
+			Paintball.getMenu().open(p);
 			event.setCancelled(true);
 		}
 	}
