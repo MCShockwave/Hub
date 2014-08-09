@@ -488,6 +488,11 @@ public class Paintball implements Listener {
 		Player p = event.getPlayer();
 		Item i = event.getItem();
 		ItemStack it = i.getItemStack();
+		
+		if (!items.contains(i)) {
+			event.setCancelled(true);
+			return;
+		}
 
 		if (Paintball.getGame(p.getName()) == this && it.getType() == Material.WOOL) {
 			short data = (short) (green.contains(p.getName()) ? 5 : yellow.contains(p.getName()) ? 4 : 0);
@@ -650,6 +655,8 @@ public class Paintball implements Listener {
 			PacketUtils.sendPacket(p, PacketUtils.generateParticles(particle, l, rad, speed, amount));
 	}
 
+	List<Item>	items	= new ArrayList<>();
+
 	public Item dropItem(Location l, ItemStack it) {
 		Item i = l.getWorld().dropItem(l, it);
 		i.teleport(l);
@@ -662,6 +669,8 @@ public class Paintball implements Listener {
 				}
 			}
 		}
+		
+		items.add(i);
 
 		return i;
 	}
@@ -677,6 +686,8 @@ public class Paintball implements Listener {
 				}
 			}
 		}
+		
+		items.add(i);
 
 		return i;
 	}
