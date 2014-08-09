@@ -10,6 +10,7 @@ import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils;
+import net.mcshockwave.MCS.Utils.PacketUtils.ParticleEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +45,7 @@ public class Paintball implements Listener {
 
 	public static String				cmdQueue	= "/queue";
 
-	private static ArrayList<Paintball>	games		= new ArrayList<>();
+	public static ArrayList<Paintball>	games		= new ArrayList<>();
 
 	static Random						rand		= new Random();
 
@@ -149,6 +150,76 @@ public class Paintball implements Listener {
 
 		Bukkit.getPluginManager().registerEvents(this, HubPlugin.ins);
 
+		if (current == Minigame.Search_and_Destroy) {
+			grnBomb = rand.nextBoolean();
+
+			Player bmb = getPlayers(grnBomb ? green : yellow).get(
+					rand.nextInt(getPlayers(grnBomb ? green : yellow).size()));
+			bmb.getInventory().addItem(new ItemStack(Material.TNT));
+
+			send(grnBomb ? "§a§lGreen team has the bomb! §a(" + bmb.getName() + ")"
+					: "§e§lYellow team has the bomb! §e(" + bmb.getName() + ")");
+
+			tasks.add(new BukkitRunnable() {
+				public void run() {
+					if (bombPlanted == null) {
+						for (Player p : getPlayers(grnBomb ? green : yellow)) {
+							if (p.getInventory().contains(Material.TNT)) {
+								PacketUtils.playBlockDustParticles(Material.TNT, 0, p.getEyeLocation(), 0.3f, 0.1f);
+								if (p.getLocation().distanceSquared(getCenter()) < 3 * 3) {
+									int maxProg = 5;
+									if (++plantProgress >= maxProg) {
+										bombPlanted = HubPlugin.endWorld().dropItem(getCenter(),
+												new ItemStack(Material.TNT));
+										bombPlanted.setVelocity(new Vector());
+										send("§6§lThe Bomb has been planted by " + p.getName());
+										plantProgress = 0;
+										p.getInventory().clear(p.getInventory().first(Material.TNT));
+										break;
+									} else {
+										p.getWorld().playSound(p.getLocation(), Sound.WOOD_CLICK, 10, 0);
+										send("§6Planting... (Progress: §e" + plantProgress + " §6/§e " + maxProg
+												+ "§6)");
+										break;
+									}
+								}
+							}
+						}
+					} else {
+						int maxProg = 45;
+						PacketUtils.playParticleEffect(ParticleEffect.FLAME, bombPlanted.getLocation(), 0, 0.05f, 10);
+						HubPlugin.endWorld().playSound(bombPlanted.getLocation(), Sound.CLICK, 10,
+								((float) plantProgress / (float) maxProg) + 1);
+
+						boolean def = false;
+						for (Player p : getPlayers(grnBomb ? yellow : green)) {
+							if (p.getLocation().distanceSquared(bombPlanted.getLocation()) < 3 * 3) {
+								send("§6Defusing... (Left: §e" + plantProgress-- + "§6)");
+								def = true;
+								if (plantProgress <= 0) {
+									MCShockwave.broadcast(grnBomb ? ChatColor.YELLOW : ChatColor.GREEN,
+											"%s has won a game of paintball!", grnBomb ? "Yellow" : "Green");
+									end();
+									return;
+								}
+								break;
+							}
+						}
+
+						if (!def) {
+							if (++plantProgress >= maxProg) {
+								HubPlugin.endWorld().playSound(bombPlanted.getLocation(), Sound.EXPLODE, 10, 0);
+								MCShockwave.broadcast(grnBomb ? ChatColor.GREEN : ChatColor.YELLOW,
+										"%s has won a game of paintball!", grnBomb ? "Green" : "Yellow");
+								end();
+								return;
+							}
+						}
+					}
+				}
+			}.runTaskTimer(HubPlugin.ins, 20, 20));
+		}
+
 		if (current == Minigame.Capture_the_Flag) {
 			tasks.add(new BukkitRunnable() {
 				public void run() {
@@ -161,7 +232,7 @@ public class Paintball implements Listener {
 					HubPlugin
 							.endWorld()
 							.dropItem(
-									getGreenSpawn(defaultY),
+									getYellowSpawn(defaultY),
 									ItemMetaUtils.setItemName(new ItemStack(Material.WOOL, 1, (short) 4),
 											"§eYellow Wool")).setVelocity(new Vector());
 				}
@@ -171,22 +242,26 @@ public class Paintball implements Listener {
 				public void run() {
 					for (Player p : getPlayers(green)) {
 						if (p.getInventory().contains(Material.WOOL)) {
-							PacketUtils.playBlockDustParticles(Material.WOOL, 5, p.getEyeLocation(), 0.3f, 0.1f);
-							if (getGreenSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3) {
+							PacketUtils.playBlockDustParticles(Material.WOOL, 4, p.getEyeLocation(), 0.3f, 0.1f);
+							if (getGreenSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(5)) {
 								MCShockwave.broadcast(ChatColor.GREEN, "%s has won a game of paintball!", "Green");
+								end();
+								return;
 							}
 						}
 					}
 					for (Player p : getPlayers(yellow)) {
 						if (p.getInventory().contains(Material.WOOL)) {
-							PacketUtils.playBlockDustParticles(Material.WOOL, 4, p.getEyeLocation(), 0.3f, 0.1f);
-							if (getYellowSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3) {
+							PacketUtils.playBlockDustParticles(Material.WOOL, 5, p.getEyeLocation(), 0.3f, 0.1f);
+							if (getYellowSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(4)) {
 								MCShockwave.broadcast(ChatColor.YELLOW, "%s has won a game of paintball!", "Yellow");
+								end();
+								return;
 							}
 						}
 					}
 				}
-			}.runTaskTimer(HubPlugin.ins, 10, 10));
+			}.runTaskTimer(HubPlugin.ins, 5, 5));
 		}
 
 		if (current == Minigame.Grifball) {
@@ -241,6 +316,27 @@ public class Paintball implements Listener {
 		}
 	}
 
+	public int		plantProgress	= 0;
+	public boolean	grnBomb			= false;
+	public Item		bombPlanted		= null;
+
+	public boolean isFlagAtBase(int data) {
+		for (Entity e : HubPlugin.endWorld().getEntities()) {
+			if (e instanceof Item) {
+				Item i = (Item) e;
+
+				if (i.getItemStack().getDurability() == data) {
+					if (data == 5) {
+						return getGreenSpawn(defaultY).distanceSquared(i.getLocation()) < 3 * 3;
+					} else {
+						return getYellowSpawn(defaultY).distanceSquared(i.getLocation()) < 3 * 3;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public void end() {
 		for (Player p : getPlayers()) {
 			p.teleport(HubPlugin.dW().getSpawnLocation());
@@ -257,22 +353,42 @@ public class Paintball implements Listener {
 		for (BukkitTask bt : tasks) {
 			bt.cancel();
 		}
+
+		for (Entity e : HubPlugin.endWorld().getEntities()) {
+			if (e instanceof Item) {
+				Item i = (Item) e;
+
+				if (i.getLocation().distanceSquared(getCenter()) < 100 * 100) {
+					i.remove();
+				}
+			}
+		}
 	}
 
 	public void onDeath(Player p, String msg) {
 		send("§8[§c§lPaintball§8] §f" + msg);
 
+		if (current == Minigame.Search_and_Destroy) {
+			if (p.getInventory().contains(Material.TNT)) {
+				p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(Material.TNT));
+			}
+		}
+
 		if (!current.allowRespawn) {
 			green.remove(p.getName());
 			yellow.remove(p.getName());
 
-			if (green.size() == 0) {
+			if (current == Minigame.Search_and_Destroy && bombPlanted != null) {
+				return;
+			}
+
+			if (yellow.size() == 0) {
 				MCShockwave.broadcast(ChatColor.GREEN, "%s has won a game of paintball!", "Green");
 				end();
 				return;
 			}
 
-			if (yellow.size() == 0) {
+			if (green.size() == 0) {
 				MCShockwave.broadcast(ChatColor.YELLOW, "%s has won a game of paintball!", "Yellow");
 				end();
 				return;
@@ -283,6 +399,16 @@ public class Paintball implements Listener {
 			if (p.getInventory().contains(Material.TNT)) {
 				p.getWorld().dropItemNaturally(p.getLocation(),
 						ItemMetaUtils.setItemName(new ItemStack(Material.TNT), "§cGrif§6ball"));
+			}
+		}
+
+		if (current == Minigame.Capture_the_Flag) {
+			if (p.getInventory().contains(Material.WOOL)) {
+				boolean grn = green.contains(p.getName());
+				HubPlugin.endWorld().dropItemNaturally(
+						p.getLocation(),
+						ItemMetaUtils.setItemName(new ItemStack(Material.WOOL, 1, (short) (grn ? 4 : 5)),
+								(grn ? "§eYellow" : "§aGreen") + " Wool"));
 			}
 		}
 	}
@@ -327,18 +453,30 @@ public class Paintball implements Listener {
 
 		if (Paintball.getGame(p.getName()) == this && it.getType() == Material.WOOL) {
 			short data = (short) (green.contains(p.getName()) ? 5 : yellow.contains(p.getName()) ? 4 : 0);
-			String team = data == 5 ? "§aGreen" : "§eYellow";
+			String sameName = data == 5 ? "§aGreen" : "§eYellow";
+			String otherName = data == 5 ? "§eYellow" : "§aGreen";
 			ChatColor sameTeam = data == 5 ? ChatColor.GREEN : ChatColor.YELLOW;
-			ChatColor otherTeam = data == 5 ? ChatColor.YELLOW : ChatColor.GREEN;
 
 			if (it.getDurability() == data) {
 				event.setCancelled(true);
 				if (getSpawn(p.getName()).distanceSquared(i.getLocation()) > 3 * 3) {
 					i.teleport(getSpawn(p.getName()));
-					send(team + "'s §8wool was recovered by " + sameTeam + p.getName() + "§8!");
+					send(sameName + "'s §7wool was recovered by " + sameTeam + p.getName() + "§7!");
 				}
 			} else {
-				send(team + "'s §8wool was stolen by " + otherTeam + p.getName() + "§8!");
+				send(otherName + "'s §7wool was stolen by " + sameTeam + p.getName() + "§7!");
+			}
+		}
+
+		if (current == Minigame.Search_and_Destroy) {
+			if (Paintball.getGame(p.getName()) == this && it.getType() == Material.TNT) {
+				if (grnBomb && yellow.contains(p.getName()) || !grnBomb && green.contains(p.getName())) {
+					event.setCancelled(true);
+				}
+			}
+
+			if (i.equals(bombPlanted)) {
+				event.setCancelled(true);
 			}
 		}
 	}
@@ -347,7 +485,8 @@ public class Paintball implements Listener {
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		ItemStack it = event.getItemDrop().getItemStack();
 
-		if (Paintball.getGame(event.getPlayer().getName()) == this && current == Minigame.Grifball
+		if (Paintball.getGame(event.getPlayer().getName()) == this
+				&& (current == Minigame.Grifball || current == Minigame.Search_and_Destroy)
 				&& it.getType() == Material.TNT) {
 			event.setCancelled(false);
 		}
@@ -435,7 +574,7 @@ public class Paintball implements Listener {
 
 		public static Minigame getFromString(String s) {
 			for (Minigame game : values()) {
-				if (game.toString().equalsIgnoreCase(s)) {
+				if (game.toString().replace(' ', '_').equalsIgnoreCase(s)) {
 					return game;
 				}
 			}
@@ -471,11 +610,11 @@ public class Paintball implements Listener {
 	}
 
 	public static Location getGreenSpawn(int y) {
-		return new Location(HubPlugin.endWorld(), 527.5, y, 553.5, 0, 180);
+		return new Location(HubPlugin.endWorld(), 527.5, y, 553.5, 180, 0);
 	}
 
 	public static Location getCenter() {
-		return new Location(HubPlugin.endWorld(), 500.5, defaultY, 510.5);
+		return new Location(HubPlugin.endWorld(), 500.5, 104, 510.5, 0, 0);
 	}
 
 }

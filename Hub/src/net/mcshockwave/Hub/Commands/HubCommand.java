@@ -62,6 +62,12 @@ public class HubCommand implements CommandExecutor {
 						args.length > 2 ? Integer.parseInt(args[2]) : 10);
 				pg.queue(true);
 			}
+			
+			if (args[0].equalsIgnoreCase("endPaintball")) {
+				for (Paintball pg : Paintball.games) {
+					pg.end();
+				}
+			}
 		}
 		return false;
 	}
