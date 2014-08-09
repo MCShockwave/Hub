@@ -3,6 +3,7 @@ net\mcshockwave\Hub\DefaultListener$23.class
 net\mcshockwave\Hub\DefaultListener$8.class
 net\mcshockwave\Hub\Kit\Paintball$Minigame.class
 net\mcshockwave\Hub\Kit\RandomEvent$10.class
+net\mcshockwave\Hub\Kit\Paintball$10.class
 net\mcshockwave\Hub\DefaultListener$15.class
 net\mcshockwave\Hub\Kit\RandomEvent$2.class
 net\mcshockwave\Hub\Kit\Paintball$GameState.class
@@ -28,6 +29,7 @@ net\mcshockwave\Hub\DefaultListener$11.class
 net\mcshockwave\Hub\Kit\Paintball$2.class
 net\mcshockwave\Hub\Kit\RandomEvent$6.class
 net\mcshockwave\Hub\DefaultListener$12.class
+net\mcshockwave\Hub\Kit\Paintball$11.class
 net\mcshockwave\Hub\DefaultListener$1.class
 net\mcshockwave\Hub\Kit\Kit$1.class
 net\mcshockwave\Hub\Kit\Kit$2.class
@@ -45,7 +47,9 @@ net\mcshockwave\Hub\Kit\Paintball$7.class
 net\mcshockwave\Hub\Commands\PetCommand.class
 net\mcshockwave\Hub\DefaultListener$13.class
 net\mcshockwave\Hub\DefaultListener.class
+net\mcshockwave\Hub\Kit\Paintball$12.class
 net\mcshockwave\Hub\DefaultListener$22.class
+net\mcshockwave\Hub\Kit\Paintball$13.class
 net\mcshockwave\Hub\DefaultListener$3.class
 net\mcshockwave\Hub\DefaultListener$5.class
 net\mcshockwave\Hub\Kit\Kit.class

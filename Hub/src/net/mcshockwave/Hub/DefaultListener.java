@@ -63,6 +63,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -123,6 +124,24 @@ public class DefaultListener implements Listener {
 		if (pets.containsKey(p.getUniqueId())) {
 			pets.get(p.getUniqueId()).remove();
 			pets.remove(p.getUniqueId());
+		}
+		
+		if (Paintball.getGame(p.getName()) != null) {
+			Paintball.getGame(p.getName()).leave(p.getName());
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		Player p = event.getPlayer();
+		
+		if (pets.containsKey(p.getUniqueId())) {
+			pets.get(p.getUniqueId()).remove();
+			pets.remove(p.getUniqueId());
+		}
+		
+		if (Paintball.getGame(p.getName()) != null) {
+			Paintball.getGame(p.getName()).leave(p.getName());
 		}
 	}
 
@@ -458,7 +477,8 @@ public class DefaultListener implements Listener {
 		final Player p = event.getPlayer();
 		final Block b = event.getBlock();
 
-		if (p.getGameMode() != GameMode.CREATIVE) {
+		if (p.getGameMode() != GameMode.CREATIVE
+				&& p.getWorld().getSpawnLocation().distanceSquared(p.getLocation()) < 200 * 200) {
 			if (b.getType() == Material.BEACON) {
 				event.setCancelled(true);
 
