@@ -3,6 +3,7 @@ package net.mcshockwave.Hub.Commands;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.Hub.ServerSelector;
 import net.mcshockwave.Hub.Kit.Kit;
+import net.mcshockwave.Hub.Kit.Paintball;
 import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.minecraft.server.v1_7_R4.World;
 
@@ -51,9 +52,15 @@ public class HubCommand implements CommandExecutor {
 				Location l = p.getLocation();
 				p.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
 			}
-			
+
 			if (args[0].equalsIgnoreCase("gunmode")) {
 				Kit.toggleGunMode();
+			}
+
+			if (args[0].equalsIgnoreCase("paintball")) {
+				Paintball pg = Paintball.newGame(Paintball.Minigame.getFromString(args[1]),
+						args.length > 2 ? Integer.parseInt(args[2]) : 10);
+				pg.queue(true);
 			}
 		}
 		return false;

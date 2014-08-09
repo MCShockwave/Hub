@@ -4,6 +4,7 @@ import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
+import net.mcshockwave.Hub.Kit.Paintball;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
@@ -57,6 +58,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -419,6 +421,21 @@ public class DefaultListener implements Listener {
 			event.setCancelled(true);
 		} else
 			event.setCancelled(false);
+	}
+
+	@EventHandler
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		Player p = event.getPlayer();
+		String msg = event.getMessage();
+		String[] args = msg.split(" ");
+		String cmd = args[0].toLowerCase();
+
+		if (cmd.equalsIgnoreCase(Paintball.cmdQueue)) {
+			if (Paintball.getActiveQueue() != null) {
+				Paintball.getActiveQueue().addToQueue(p.getName());
+			}
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
@@ -870,10 +887,14 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player p = event.getEntity();
-		if (isInArena(p)) {
-			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				if (isInArena(p2)) {
-					p2.sendMessage("§7[§e§lPVP§7]§f " + event.getDeathMessage());
+		if (Paintball.getGame(p.getName()) != null) {
+			Paintball.getGame(p.getName()).onDeath(p, event.getDeathMessage());
+		} else {
+			if (isInArena(p)) {
+				for (Player p2 : Bukkit.getOnlinePlayers()) {
+					if (isInArena(p2)) {
+						p2.sendMessage("§7[§e§lPVP§7]§f " + event.getDeathMessage());
+					}
 				}
 			}
 		}
@@ -913,17 +934,21 @@ public class DefaultListener implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player p = event.getPlayer();
-		if (isInArena(p)) {
-			event.setRespawnLocation(HubPlugin.dW().getSpawnLocation());
-			resetPlayerInv(p);
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				public void run() {
-					Kit.clearPE(p);
-				}
-			}, 10l);
+		if (Paintball.getGame(p.getName()) != null) {
+			Paintball.getGame(p.getName()).onRespawn(p, event);
+		} else {
+			if (isInArena(p)) {
+				event.setRespawnLocation(HubPlugin.dW().getSpawnLocation());
+				resetPlayerInv(p);
+				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+					public void run() {
+						Kit.clearPE(p);
+					}
+				}, 10l);
 
-			p.getInventory().setItem(8,
-					ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Kit Selector §e(Right click)"));
+				p.getInventory().setItem(8,
+						ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Kit Selector §e(Right click)"));
+			}
 		}
 	}
 
