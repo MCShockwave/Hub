@@ -4,8 +4,9 @@ import static net.mcshockwave.Hub.Kit.Paintball.GameState.NONE;
 import static net.mcshockwave.Hub.Kit.Paintball.GameState.QUEUED;
 import static net.mcshockwave.Hub.Kit.Paintball.GameState.STARTED;
 import net.mcshockwave.Guns.Gun;
-import net.mcshockwave.Guns.GunFireEvent;
 import net.mcshockwave.Guns.addons.Addon;
+import net.mcshockwave.Guns.events.GunFireEvent;
+import net.mcshockwave.Guns.events.GunHitEvent;
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.MCShockwave;
@@ -326,7 +327,7 @@ public class Paintball implements Listener {
 		}
 	}
 
-	public double		plantProgress	= 0;
+	public double	plantProgress	= 0;
 	public boolean	grnBomb			= false;
 	public Item		bombPlanted		= null;
 
@@ -461,6 +462,18 @@ public class Paintball implements Listener {
 				for (Player p : getPlayers()) {
 					event.canSee().add(p);
 				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onGunHit(GunHitEvent event) {
+		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+			Player hit = (Player) event.getEntity();
+			Player shooter = (Player) event.getDamager();
+
+			if (players.contains(shooter.getName()) && Paintball.getGame(hit.getName()) != this) {
+				event.setCancelled(true);
 			}
 		}
 	}
