@@ -6,6 +6,7 @@ import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.PetCommand;
 import net.mcshockwave.Hub.Commands.SpawnCommand;
+import net.mcshockwave.Hub.Commands.TourneyCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.mcshockwave.MCS.MCShockwave;
@@ -59,6 +60,7 @@ public class HubPlugin extends JavaPlugin {
 		getCommand("hc").setExecutor(new HubCommand());
 		getCommand("pvp").setExecutor(new PVPCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
+		getCommand("tournament").setExecutor(new TourneyCommand());
 
 		MCShockwave.mesJoin = "";
 		MCShockwave.mesKick = "";
@@ -147,7 +149,7 @@ public class HubPlugin extends JavaPlugin {
 				it.remove();
 			}
 		}
-		
+
 		for (LivingEntity le : DefaultListener.pets.values()) {
 			le.remove();
 		}

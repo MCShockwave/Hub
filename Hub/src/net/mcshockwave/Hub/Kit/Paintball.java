@@ -607,6 +607,8 @@ public class Paintball implements Listener {
 			grT.removePlayer(p);
 			ylT.removePlayer(p);
 
+			p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+
 			if (current == Minigame.Search_and_Destroy && bombPlanted != null) {
 				return;
 			}
@@ -993,7 +995,7 @@ public class Paintball implements Listener {
 
 		int indx = -1;
 		for (final Paintball pg : games) {
-			if (TournamentManager.paintball.containsValue(pg.gameUUID)) {
+			if (TournamentManager.paintball.containsValue(pg.gameUUID) && !editable) {
 				continue;
 			}
 			indx++;
@@ -1003,6 +1005,10 @@ public class Paintball implements Listener {
 			for (Player p : pg.getPlayers()) {
 				lore.add((pg.yellow.contains(p.getName()) ? "§e" : pg.green.contains(p.getName()) ? "§2" : "§8") + "§o"
 						+ p.getName());
+			}
+			if (TournamentManager.paintball.containsValue(pg.gameUUID)) {
+				lore.add("");
+				lore.add("§3§lTournament Game");
 			}
 			Button b = new Button(false, Material.WOOL, 1, 0, "§eGame #" + (indx + 1), lore.toArray(new String[0]));
 			m.addButton(b, indx);

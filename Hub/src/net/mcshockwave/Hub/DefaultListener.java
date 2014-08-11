@@ -463,6 +463,10 @@ public class DefaultListener implements Listener {
 			}
 			event.setCancelled(true);
 		}
+
+		if (msg.toLowerCase().startsWith(TournamentManager.TEAM_BASE_COMMAND.toLowerCase())) {
+			TournamentManager.teamCmd(args);
+		}
 	}
 
 	@EventHandler

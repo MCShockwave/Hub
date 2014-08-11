@@ -5,8 +5,6 @@ import net.mcshockwave.Hub.ServerSelector;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.Paintball;
 import net.mcshockwave.Hub.Kit.RandomEvent;
-import net.mcshockwave.Hub.Kit.TournamentManager;
-import net.mcshockwave.Hub.Kit.Paintball.Minigame;
 import net.minecraft.server.v1_7_R4.World;
 
 import org.bukkit.Location;
@@ -17,10 +15,6 @@ import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-
-import java.util.Map.Entry;
-
-import org.json.simple.JSONObject;
 
 public class HubCommand implements CommandExecutor {
 
@@ -77,55 +71,6 @@ public class HubCommand implements CommandExecutor {
 				for (Paintball pg : Paintball.games) {
 					pg.end(null);
 				}
-			}
-
-			if (args[0].equalsIgnoreCase("tgame")) {
-				if (args.length == 1) {
-					p.sendMessage("§eCurrent tournament game: §6" + TournamentManager.game);
-				} else {
-					TournamentManager.game = Minigame.valueOf(args[1]);
-				}
-			}
-
-			if (args[0].equalsIgnoreCase("tcreate")) {
-				TournamentManager.getPrepMenu().open(p);
-			}
-
-			if (args[0].equalsIgnoreCase("tstartsignedup")) {
-				TournamentManager.prepareTournament(TournamentManager.signedUp.toArray(new String[0]));
-			}
-
-			if (args[0].equalsIgnoreCase("tstart")) {
-				TournamentManager.start();
-			}
-
-			if (args[0].equalsIgnoreCase("tmatches")) {
-				for (JSONObject obj : TournamentManager.matches) {
-					p.sendMessage("§eMatch " + obj.get("identifier") + " §8(id §7" + obj.get("id") + "§8, round §7"
-							+ obj.get("round") + "§8)§e is " + obj.get("state"));
-				}
-			}
-
-			if (args[0].equalsIgnoreCase("tparticipants")) {
-				for (Entry<Long, String> par : TournamentManager.participants.entrySet()) {
-					p.sendMessage("§6Name: " + par.getValue() + " §eID: " + par.getKey());
-				}
-			}
-
-			if (args[0].equalsIgnoreCase("tnextRound")) {
-				TournamentManager.nextRound();
-			}
-
-			if (args[0].equalsIgnoreCase("trerandomize")) {
-				TournamentManager.rerandomize();
-			}
-
-			if (args[0].equalsIgnoreCase("tend")) {
-				TournamentManager.end();
-			}
-
-			if (args[0].equalsIgnoreCase("tsignups")) {
-				TournamentManager.startSignups();
 			}
 		}
 		return false;

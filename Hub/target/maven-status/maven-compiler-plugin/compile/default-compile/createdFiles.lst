@@ -16,11 +16,11 @@ net\mcshockwave\Hub\Kit\RandomEvent$8.class
 net\mcshockwave\Hub\HubPlugin.class
 net\mcshockwave\Hub\DefaultListener$14.class
 net\mcshockwave\Hub\Kit\TournamentManager$7.class
-net\mcshockwave\Hub\Kit\TournamentManager$8.class
 net\mcshockwave\Hub\Kit\TournamentManager$6.class
 net\mcshockwave\Hub\Kit\Paintball.class
 net\mcshockwave\Hub\DefaultListener$6.class
 net\mcshockwave\Hub\DefaultListener$19.class
+net\mcshockwave\Hub\Commands\TourneyCommand.class
 net\mcshockwave\Hub\Kit\RandomEvent.class
 net\mcshockwave\Hub\Kit\TournamentManager$4.class
 net\mcshockwave\Hub\Kit\Paintball$4.class

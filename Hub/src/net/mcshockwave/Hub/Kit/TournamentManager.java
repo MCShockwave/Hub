@@ -6,7 +6,6 @@ import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Menu.ItemMenu;
 import net.mcshockwave.MCS.Menu.ItemMenu.Button;
 import net.mcshockwave.MCS.Menu.ItemMenu.ButtonRunnable;
-import net.mcshockwave.MCS.Utils.ItemMetaUtils;
 import net.minecraft.util.org.apache.commons.codec.binary.Base64;
 
 import org.bukkit.Bukkit;
@@ -47,7 +46,7 @@ public class TournamentManager {
 
 	public static int					id					= -1;
 
-	public static String				tournamentURL;
+	public static String				tournamentURL, tournamentType;
 
 	public static HashMap<Long, String>	participants		= new HashMap<>();
 
@@ -55,11 +54,14 @@ public class TournamentManager {
 
 	public static HashMap<Long, UUID>	paintball			= new HashMap<>();
 
-	public static Minigame				game				= Minigame.Grifball;
+	public static Minigame				game				= Minigame.Elimination;
 
 	public static boolean				signups				= false;
 	public static List<String>			signedUp			= new ArrayList<>();
 	public static final String			SIGNUPS_COMMAND		= "/signup";
+
+	public static final String			TEAM_BASE_COMMAND	= "/team";
+	public static final String			TEAM_JOIN			= "join", TEAM_INVITE = "invite", TEAM_CREATE = "create";
 
 	public static void startSignups() {
 		signups = true;
@@ -76,12 +78,20 @@ public class TournamentManager {
 		MCShockwave.broadcast("%s has signed up for the tournament!", player);
 	}
 
+	public static void teamCmd(String[] args) {
+		String cmd = args[0];
+		
+		if (cmd.equalsIgnoreCase("")) {
+			
+		}
+	}
+
 	public static void prepareTournament(final String... players) {
 		new BukkitRunnable() {
 			public void run() {
 				id = rand.nextInt(1000000);
 				tournamentURL = new BigInteger(65, rand).toString(35).toUpperCase();
-				createNewTournament(String.format(TOURNAMENT_FORMAT, id), tournamentURL);
+				createNewTournament(String.format(TOURNAMENT_FORMAT, id), tournamentURL, tournamentType);
 				for (String s : players) {
 					addParticipant(s);
 				}
@@ -198,8 +208,9 @@ public class TournamentManager {
 
 	static Random	rand	= new Random();
 
-	public static void createNewTournament(String name, String url) {
-		post("tournaments.json", "tournament[name]=" + name + "&tournament[url]=" + url, false);
+	public static void createNewTournament(String name, String url, String tournamentType) {
+		post("tournaments.json", "tournament[name]=" + name + "&tournament[url]=" + url
+				+ "&tournament[tournament_type]=" + tournamentType, false);
 	}
 
 	public static void addParticipant(String name) {
@@ -227,20 +238,23 @@ public class TournamentManager {
 		post("tournaments/%s/participants/randomize.format", "", false);
 	}
 
-	public static ItemMenu getPrepMenu() {
-		ItemMenu m = new ItemMenu("§2Tournament", Bukkit.getOnlinePlayers().size() + 1);
+	public static ItemMenu getPlayersMenu() {
+		ItemMenu m = new ItemMenu("§2Tournament §8- §3Players", Bukkit.getOnlinePlayers().size());
 
 		int indx = -1;
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Button b = new Button(false, Material.SKULL_ITEM, 1, 0, p.getName(), "Click to toggle");
+		for (final Player p : Bukkit.getOnlinePlayers()) {
+			Button b = new Button(false, Material.SKULL_ITEM, 1, signedUp.contains(p.getName()) ? 3 : 0, p.getName(),
+					"Click to toggle");
 			b.setOnClick(new ButtonRunnable() {
-				public void run(Player p, InventoryClickEvent event) {
+				public void run(Player p2, InventoryClickEvent event) {
 					ItemStack it = event.getCurrentItem();
 
 					if (it.getDurability() == 0) {
 						it.setDurability((short) 3);
+						signedUp.add(p.getName());
 					} else {
 						it.setDurability((short) 0);
+						signedUp.remove(p.getName());
 					}
 
 					event.setCurrentItem(it);
@@ -248,22 +262,6 @@ public class TournamentManager {
 			});
 			m.addButton(b, ++indx);
 		}
-
-		Button con = new Button(true, Material.INK_SACK, 1, 10, "§aConfirm");
-		con.setOnClick(new ButtonRunnable() {
-			public void run(Player p, InventoryClickEvent event) {
-				List<String> players = new ArrayList<>();
-
-				for (ItemStack it : event.getInventory().getContents()) {
-					if (it != null && it.getDurability() == 3) {
-						players.add(ChatColor.stripColor(ItemMetaUtils.getItemName(it)));
-					}
-				}
-
-				prepareTournament(players.toArray(new String[0]));
-			}
-		});
-		m.addButton(con, ++indx);
 
 		return m;
 	}

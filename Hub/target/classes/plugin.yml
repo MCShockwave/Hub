@@ -12,3 +12,5 @@ commands:
    trail:
       aliases: [nt]
    spawn:
+   tournament:
+      aliases: [tourney]
