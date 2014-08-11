@@ -170,9 +170,10 @@ public class TournamentManager {
 			public void run() {
 				MCShockwave.broadcast(ChatColor.DARK_GREEN, "The next round of the %s tournament has started!",
 						"paintball");
-				long round = -1;
+				long round = Long.MIN_VALUE;
 				for (JSONObject obj : matches) {
-					if ((round == -1 || (long) obj.get("round") == round) && obj.get("state").equals("open")) {
+					if ((round == Long.MIN_VALUE || (long) obj.get("round") == round)
+							&& obj.get("state").equals("open")) {
 						round = (long) obj.get("round");
 						long id1 = (long) obj.get("player1_id");
 						long id2 = (long) obj.get("player2_id");
