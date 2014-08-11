@@ -91,6 +91,10 @@ public class HubCommand implements CommandExecutor {
 				TournamentManager.getPrepMenu().open(p);
 			}
 
+			if (args[0].equalsIgnoreCase("tstartsignedup")) {
+				TournamentManager.prepareTournament(TournamentManager.signedUp.toArray(new String[0]));
+			}
+
 			if (args[0].equalsIgnoreCase("tstart")) {
 				TournamentManager.start();
 			}
@@ -114,6 +118,14 @@ public class HubCommand implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("trerandomize")) {
 				TournamentManager.rerandomize();
+			}
+
+			if (args[0].equalsIgnoreCase("tend")) {
+				TournamentManager.end();
+			}
+
+			if (args[0].equalsIgnoreCase("tsignups")) {
+				TournamentManager.startSignups();
 			}
 		}
 		return false;

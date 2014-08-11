@@ -12,7 +12,6 @@ net\mcshockwave\Hub\DefaultListener$21.class
 net\mcshockwave\Hub\ServerSelector.class
 net\mcshockwave\Hub\DefaultListener$16.class
 net\mcshockwave\Hub\Commands\CoinsCommand.class
-META-INF\maven\HubPlugin\HubPlugin\pom.xml
 net\mcshockwave\Hub\Kit\RandomEvent$8.class
 net\mcshockwave\Hub\HubPlugin.class
 net\mcshockwave\Hub\DefaultListener$14.class
@@ -62,7 +61,6 @@ net\mcshockwave\Hub\DefaultListener$22.class
 net\mcshockwave\Hub\Kit\TournamentManager.class
 net\mcshockwave\Hub\Kit\Paintball$13.class
 net\mcshockwave\Hub\DefaultListener$3.class
-META-INF\maven\HubPlugin\HubPlugin\pom.properties
 net\mcshockwave\Hub\DefaultListener$5.class
 net\mcshockwave\Hub\Kit\Kit.class
 net\mcshockwave\Hub\Kit\RandomEvent$3.class

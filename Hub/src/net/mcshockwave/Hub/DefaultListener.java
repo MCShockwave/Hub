@@ -5,6 +5,7 @@ import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.Paintball;
+import net.mcshockwave.Hub.Kit.TournamentManager;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
@@ -125,21 +126,21 @@ public class DefaultListener implements Listener {
 			pets.get(p.getUniqueId()).remove();
 			pets.remove(p.getUniqueId());
 		}
-		
+
 		if (Paintball.getGame(p.getName()) != null) {
 			Paintball.getGame(p.getName()).leave(p.getName());
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
 		Player p = event.getPlayer();
-		
+
 		if (pets.containsKey(p.getUniqueId())) {
 			pets.get(p.getUniqueId()).remove();
 			pets.remove(p.getUniqueId());
 		}
-		
+
 		if (Paintball.getGame(p.getName()) != null) {
 			Paintball.getGame(p.getName()).leave(p.getName());
 		}
@@ -451,6 +452,15 @@ public class DefaultListener implements Listener {
 
 		if (cmd.equalsIgnoreCase(Paintball.cmdMenu)) {
 			Paintball.getMenu().open(p);
+			event.setCancelled(true);
+		}
+
+		if (cmd.equalsIgnoreCase(TournamentManager.SIGNUPS_COMMAND)) {
+			if (TournamentManager.signups) {
+				TournamentManager.signupPlayer(p.getName());
+			} else {
+				p.sendMessage("§cSignups are not open!");
+			}
 			event.setCancelled(true);
 		}
 	}
