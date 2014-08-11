@@ -80,9 +80,9 @@ public class TournamentManager {
 
 	public static void teamCmd(String[] args) {
 		String cmd = args[0];
-		
+
 		if (cmd.equalsIgnoreCase("")) {
-			
+
 		}
 	}
 
@@ -115,7 +115,7 @@ public class TournamentManager {
 	public static void end() {
 		new BukkitRunnable() {
 			public void run() {
-				post("tournaments/%s/finalize.format", "", false);
+				post("tournaments/%s/finalize.json", "", false);
 			}
 		}.runTaskAsynchronously(HubPlugin.ins);
 		running = false;
@@ -172,7 +172,7 @@ public class TournamentManager {
 						"paintball");
 				long round = -1;
 				for (JSONObject obj : matches) {
-					if (round == -1 && obj.get("state").equals("open") || (long) obj.get("round") == round) {
+					if ((round == -1 || (long) obj.get("round") == round) && obj.get("state").equals("open")) {
 						round = (long) obj.get("round");
 						long id1 = (long) obj.get("player1_id");
 						long id2 = (long) obj.get("player2_id");
