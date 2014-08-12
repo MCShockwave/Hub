@@ -2,6 +2,7 @@ package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.Kit.TournamentManager;
 import net.mcshockwave.Hub.Kit.Paintball.Minigame;
+import net.mcshockwave.MCS.MCShockwave;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -72,6 +73,23 @@ public class TourneyCommand implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("signups")) {
 				TournamentManager.startSignups();
+			}
+
+			if (args[0].equalsIgnoreCase("teams")) {
+				p.sendMessage("§eTournament teams are §6" + (TournamentManager.teams_enabled ? "enabled" : "disabled"));
+			}
+
+			if (args[0].equalsIgnoreCase("teamstog")) {
+				TournamentManager.teams_enabled = !TournamentManager.teams_enabled;
+				MCShockwave.broadcast("Tournament teams are now %s", TournamentManager.teams_enabled ? "enabled"
+						: "disabled");
+			}
+
+			if (args[0].equalsIgnoreCase("limit")) {
+				if (args.length > 1) {
+					TournamentManager.team_limit = Integer.parseInt(args[1]);
+				}
+				p.sendMessage("§eCurrent tournament team limit: §6" + TournamentManager.team_limit);
 			}
 		}
 		return false;

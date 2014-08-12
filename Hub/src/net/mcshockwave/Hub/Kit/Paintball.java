@@ -499,8 +499,10 @@ public class Paintball implements Listener {
 
 	public void end(String winner) {
 		if (winner != null && TournamentManager.paintball.containsValue(gameUUID)) {
-			TournamentManager.onWin("Green".equalsIgnoreCase(winner) ? green.get(0)
-					: "Yellow".equalsIgnoreCase(winner) ? yellow.get(0) : winner, this);
+			boolean te = TournamentManager.teams_enabled;
+			TournamentManager.onWin(
+					"Green".equalsIgnoreCase(winner) ? (te ? p1 : green.get(0))
+							: "Yellow".equalsIgnoreCase(winner) ? (te ? p2 : yellow.get(0)) : winner, this);
 		}
 
 		for (Player p : getPlayers()) {

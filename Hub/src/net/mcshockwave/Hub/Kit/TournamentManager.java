@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -36,38 +37,58 @@ import org.json.simple.parser.JSONParser;
 
 public class TournamentManager {
 
-	public static final String			CHALLONGE_API_KEY	= "KSltuaCt3HcRECfW5JDKh8PgwEa7Jv4sYBBqrKy8";
+	public static final String								CHALLONGE_API_KEY	= "KSltuaCt3HcRECfW5JDKh8PgwEa7Jv4sYBBqrKy8";
 
-	public static final String			CHALLONGE_API_URL	= "https://api.challonge.com/v1/%s";
+	public static final String								CHALLONGE_API_URL	= "https://api.challonge.com/v1/%s";
 
-	public static final String			TOURNAMENT_FORMAT	= "PAINTBALL%s";
+	public static final String								TOURNAMENT_FORMAT	= "PAINTBALL%s";
 
-	public static boolean				running				= false;
+	public static boolean									running				= false;
 
-	public static int					id					= -1;
+	public static int										id					= -1;
 
-	public static String				tournamentURL, tournamentType;
+	public static String									tournamentURL, tournamentType;
 
-	public static HashMap<Long, String>	participants		= new HashMap<>();
+	public static HashMap<Long, String>						participants		= new HashMap<>();
 
-	public static List<JSONObject>		matches				= new ArrayList<>();
+	public static List<JSONObject>							matches				= new ArrayList<>();
 
-	public static HashMap<Long, UUID>	paintball			= new HashMap<>();
+	public static HashMap<Long, UUID>						paintball			= new HashMap<>();
 
-	public static Minigame				game				= Minigame.Elimination;
+	public static Minigame									game				= Minigame.Elimination;
 
-	public static boolean				signups				= false;
-	public static List<String>			signedUp			= new ArrayList<>();
-	public static final String			SIGNUPS_COMMAND		= "/signup";
+	public static boolean									signups				= false;
+	public static List<String>								signedUp			= new ArrayList<>();
+	public static final String								SIGNUPS_COMMAND		= "/signup";
 
-	public static final String			TEAM_BASE_COMMAND	= "/team";
-	public static final String			TEAM_JOIN			= "join", TEAM_INVITE = "invite", TEAM_CREATE = "create";
+	public static boolean									teams_enabled		= false;
+	public static final HashMap<UUID, ArrayList<String>>	teams				= new HashMap<>();
+	public static final String								TEAM_BASE_COMMAND	= "/team";
+	public static final String								TEAM_JOIN			= "join", TEAM_INVITE = "invite",
+			TEAM_CREATE = "create", TEAM_LIST = "list", TEAM_LIST_ALL = "listall", TEAM_KICK = "kick",
+			TEAM_LEAVE = "leave";
+	public static int										team_limit			= 3;
+
+	public static final String[]							cmds				= { TEAM_CREATE, TEAM_INVITE,
+			TEAM_JOIN, TEAM_KICK, TEAM_LEAVE, TEAM_LIST, TEAM_LIST_ALL			};
+
+	public static final HashMap<String, ArrayList<String>>	invites				= new HashMap<>();
 
 	public static void startSignups() {
 		signups = true;
 		MCShockwave.broadcastAll(MCShockwave.getBroadcastMessage(ChatColor.DARK_GREEN,
 				"Signups for the %s tournament have opened!", "paintball"), MCShockwave.getBroadcastMessage(
 				ChatColor.DARK_AQUA, "Type %s to sign up!", SIGNUPS_COMMAND));
+	}
+
+	public static void signupTeam(UUID team) {
+		if (signedUp.contains(team.toString())) {
+			return;
+		}
+		signedUp.add(team.toString());
+		String owner = teams.get(team).get(0);
+		MCShockwave.broadcast(ChatColor.DARK_AQUA, "%s" + (owner.endsWith("s") ? "'" : "'s")
+				+ " team has signed up for the tournament!", owner);
 	}
 
 	public static void signupPlayer(String player) {
@@ -78,12 +99,49 @@ public class TournamentManager {
 		MCShockwave.broadcast("%s has signed up for the tournament!", player);
 	}
 
-	public static void teamCmd(String[] args) {
-		String cmd = args[0];
-
-		if (cmd.equalsIgnoreCase("")) {
-
+	public static UUID getTeamFromParticipantName(String name) {
+		for (Entry<UUID, ArrayList<String>> ent : teams.entrySet()) {
+			if (getTeamParticipantName(ent.getKey()).equals(name)) {
+				return ent.getKey();
+			}
 		}
+		return null;
+	}
+
+	public static UUID getTeam(String pl) {
+		for (Entry<UUID, ArrayList<String>> ent : teams.entrySet()) {
+			if (ent.getValue().contains(pl)) {
+				return ent.getKey();
+			}
+		}
+		return null;
+	}
+
+	public static List<Player> getPlayersForTeam(UUID team) {
+		List<Player> ret = new ArrayList<>();
+		for (String s : teams.get(team)) {
+			if (Bukkit.getPlayer(s) != null) {
+				ret.add(Bukkit.getPlayer(s));
+			}
+		}
+		return ret;
+	}
+
+	public static void messageTeam(UUID team, String msg) {
+		for (Player p : getPlayersForTeam(team)) {
+			p.sendMessage(msg);
+		}
+	}
+
+	public static String getTeamParticipantName(UUID team) {
+		String ret = "";
+		for (String s : teams.get(team)) {
+			ret += s + ", ";
+		}
+		if (ret.length() > 2) {
+			ret = ret.substring(0, ret.length() - 2);
+		}
+		return ret;
 	}
 
 	public static void prepareTournament(final String... players) {
@@ -92,8 +150,14 @@ public class TournamentManager {
 				id = rand.nextInt(1000000);
 				tournamentURL = new BigInteger(65, rand).toString(35).toUpperCase();
 				createNewTournament(String.format(TOURNAMENT_FORMAT, id), tournamentURL, tournamentType);
-				for (String s : players) {
-					addParticipant(s);
+				if (teams_enabled) {
+					for (UUID team : teams.keySet()) {
+						addParticipant(getTeamParticipantName(team).replace(' ', '+'));
+					}
+				} else {
+					for (String s : players) {
+						addParticipant(s);
+					}
 				}
 				updateParticipants();
 			}
@@ -137,7 +201,10 @@ public class TournamentManager {
 		return id;
 	}
 
-	public static void onWin(final String pl, final Paintball game) {
+	public static void onWin(String pl, final Paintball game) {
+		if (teams_enabled && Bukkit.getPlayer(pl) != null) {
+			pl = getTeam(pl).toString();
+		}
 		long id = -1;
 		for (Entry<Long, UUID> ent : paintball.entrySet()) {
 			if (ent.getValue().equals(game.gameUUID)) {
@@ -146,12 +213,16 @@ public class TournamentManager {
 			}
 		}
 		if (id != -1) {
+			if (teams_enabled) {
+				pl = getTeamParticipantName(UUID.fromString(pl));
+			}
 			final long idf = id;
+			final String plf = pl;
 			new BukkitRunnable() {
 				public void run() {
-					String csv = pl.equalsIgnoreCase(game.p1) ? "1-0" : "0-1";
+					String csv = plf.equalsIgnoreCase(game.p1) ? "1-0" : "0-1";
 					post("tournaments/%s/matches/" + idf + ".json", "match[scores_csv]=" + csv + "&match[winner_id]="
-							+ getParticipantID(pl), true);
+							+ getParticipantID(plf), true);
 					updateMatches();
 				}
 			}.runTaskAsynchronously(HubPlugin.ins);
@@ -183,24 +254,54 @@ public class TournamentManager {
 
 						MCShockwave.broadcast("Match §e" + obj.get("identifier") + "§7: %s VS. %s", p1, p2);
 
-						Paintball pb = Paintball.newGame(game, 2);
-						paintball.put((Long) obj.get("id"), pb.gameUUID);
-						pb.queue(true, false);
+						if (teams_enabled) {
+							Paintball pb = Paintball.newGame(game, teams.get(getTeamFromParticipantName(p1)).size()
+									+ teams.get(getTeamFromParticipantName(p2)).size());
+							paintball.put((Long) obj.get("id"), pb.gameUUID);
+							pb.queue(false, false);
 
-						pb.p1 = p1;
-						pb.p2 = p2;
+							pb.p1 = getTeamFromParticipantName(p1).toString();
+							pb.p2 = getTeamFromParticipantName(p2).toString();
 
-						if (Bukkit.getPlayer(p1) == null) {
-							onWin(p2, pb);
-							continue;
+							if (getPlayersForTeam(UUID.fromString(pb.p1)).size() < 1) {
+								onWin(pb.p2, pb);
+								return;
+							}
+							if (getPlayersForTeam(UUID.fromString(pb.p2)).size() < 1) {
+								onWin(pb.p1, pb);
+								return;
+							}
+
+							for (Player p : getPlayersForTeam(UUID.fromString(pb.p1))) {
+								pb.addToQueue(p.getName());
+								pb.green.add(p.getName());
+							}
+							for (Player p : getPlayersForTeam(UUID.fromString(pb.p2))) {
+								pb.addToQueue(p.getName());
+								pb.yellow.add(p.getName());
+							}
+
+							pb.start(false);
+						} else {
+							Paintball pb = Paintball.newGame(game, 2);
+							paintball.put((Long) obj.get("id"), pb.gameUUID);
+							pb.queue(true, false);
+
+							pb.p1 = p1;
+							pb.p2 = p2;
+
+							if (Bukkit.getPlayer(p1) == null) {
+								onWin(p2, pb);
+								continue;
+							}
+							if (Bukkit.getPlayer(p2) == null) {
+								onWin(p1, pb);
+								continue;
+							}
+
+							pb.addToQueue(p1);
+							pb.addToQueue(p2);
 						}
-						if (Bukkit.getPlayer(p2) == null) {
-							onWin(p1, pb);
-							continue;
-						}
-
-						pb.addToQueue(p1);
-						pb.addToQueue(p2);
 					}
 				}
 			}
@@ -237,6 +338,119 @@ public class TournamentManager {
 
 	public static void rerandomize() {
 		post("tournaments/%s/participants/randomize.format", "", false);
+	}
+
+	public static void teamCmd(Player p, String[] args) {
+		String cmd = args[0];
+		String subcmd = cmd.replaceFirst(TEAM_BASE_COMMAND, "");
+
+		if (cmd.equalsIgnoreCase(TEAM_BASE_COMMAND)) {
+			p.sendMessage("§eCommand list:");
+			for (String s : cmds) {
+				p.sendMessage("§6" + TEAM_BASE_COMMAND + s);
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_CREATE)) {
+			if (getTeam(p.getName()) != null) {
+				teams.remove(getTeam(p.getName()));
+			}
+
+			UUID team = UUID.randomUUID();
+			teams.put(team, new ArrayList<>(Arrays.asList(p.getName())));
+
+			p.sendMessage("§6Successfully created a team with UUID §o" + team);
+			p.sendMessage("§eInvite people with " + TEAM_BASE_COMMAND + TEAM_INVITE + " [player]");
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_INVITE) && args.length > 1) {
+			String invite = args[1];
+
+			if (getTeam(p.getName()) == null || teams.get(getTeam(p.getName())).indexOf(p.getName()) != 0) {
+				p.sendMessage("§cYou are not the leader of the team or you are not in a team");
+				return;
+			}
+			if (teams.get(getTeam(p.getName())).size() >= team_limit) {
+				p.sendMessage("§cTeam is too full!");
+				return;
+			}
+			if (Bukkit.getPlayer(invite) != null) {
+				Player p2 = Bukkit.getPlayer(invite);
+				p2.sendMessage("§3" + p.getName() + "§b has invited you to their team, type §9" + TEAM_BASE_COMMAND
+						+ TEAM_JOIN + " " + p.getName() + "§b to join.");
+
+				if (invites.containsKey(p.getName())) {
+					invites.get(p.getName()).add(p2.getName());
+				} else {
+					invites.put(p.getName(), new ArrayList<>(Arrays.asList(p2.getName())));
+				}
+
+				messageTeam(getTeam(p.getName()), "§3" + p.getName() + "§b has invited §3" + invite + "§b to the team");
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_JOIN) && args.length > 1) {
+			String join = args[1];
+
+			if (invites.containsKey(join) && invites.get(join).contains(p.getName())) {
+				if (getTeam(p.getName()) != null) {
+					messageTeam(getTeam(p.getName()), "§3" + p.getName() + "§b has left the team to join another");
+					if (teams.get(getTeam(p.getName())).indexOf(p.getName()) == 0) {
+						teams.remove(getTeam(p.getName()));
+					} else
+						teams.get(getTeam(p.getName())).remove(p.getName());
+				}
+
+				invites.get(join).remove(p.getName());
+				teams.get(getTeam(join)).add(p.getName());
+
+				messageTeam(getTeam(join), "§3" + p.getName() + "§b has joined the team");
+			} else {
+				p.sendMessage("§3" + join + "§b has no team or has not invited you");
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_LEAVE)) {
+			if (getTeam(p.getName()) != null) {
+				messageTeam(getTeam(p.getName()), "§3" + p.getName() + "§b has left the team");
+				if (teams.get(getTeam(p.getName())).indexOf(p.getName()) == 0) {
+					teams.remove(getTeam(p.getName()));
+				} else
+					teams.get(getTeam(p.getName())).remove(p.getName());
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_LIST)) {
+			if (getTeam(p.getName()) == null) {
+				p.sendMessage("§cYou are not in a team!");
+				return;
+			}
+
+			p.sendMessage("§e§oTeam ID: " + getTeam(p.getName()));
+			for (String s : teams.get(getTeam(p.getName()))) {
+				p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_LIST_ALL)) {
+			for (Entry<UUID, ArrayList<String>> tems : teams.entrySet()) {
+				p.sendMessage("§e§oTeam ID: " + tems.getKey());
+				for (String s : tems.getValue()) {
+					p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
+				}
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_KICK) && args.length > 1) {
+			String kick = args[1];
+
+			if (getTeam(p.getName()) == null || teams.get(getTeam(p.getName())).indexOf(p.getName()) != 0) {
+				p.sendMessage("§cYou are not the leader of the team or you are not in a team");
+				return;
+			}
+			messageTeam(getTeam(p.getName()), "§3" + p.getName() + "§b kicked §3" + kick + "§b from the team");
+			teams.get(getTeam(p.getName())).remove(kick);
+		}
 	}
 
 	public static ItemMenu getPlayersMenu() {

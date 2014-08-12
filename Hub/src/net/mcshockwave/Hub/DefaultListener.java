@@ -457,7 +457,15 @@ public class DefaultListener implements Listener {
 
 		if (cmd.equalsIgnoreCase(TournamentManager.SIGNUPS_COMMAND)) {
 			if (TournamentManager.signups) {
-				TournamentManager.signupPlayer(p.getName());
+				if (TournamentManager.teams_enabled) {
+					if (TournamentManager.getTeam(p.getName()) == null
+							|| TournamentManager.teams.get(TournamentManager.getTeam(p.getName())).indexOf(p.getName()) != 0) {
+						p.sendMessage("§cYou are not the leader of the team or you are not in a team");
+						return;
+					}
+					TournamentManager.signupTeam(TournamentManager.getTeam(p.getName()));
+				} else
+					TournamentManager.signupPlayer(p.getName());
 			} else {
 				p.sendMessage("§cSignups are not open!");
 			}
@@ -465,7 +473,8 @@ public class DefaultListener implements Listener {
 		}
 
 		if (msg.toLowerCase().startsWith(TournamentManager.TEAM_BASE_COMMAND.toLowerCase())) {
-			TournamentManager.teamCmd(args);
+			TournamentManager.teamCmd(p, args);
+			event.setCancelled(true);
 		}
 	}
 
