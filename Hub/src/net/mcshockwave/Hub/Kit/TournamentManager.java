@@ -145,6 +145,7 @@ public class TournamentManager {
 	}
 
 	public static void prepareTournament(final String... players) {
+		signups = false;
 		new BukkitRunnable() {
 			public void run() {
 				id = rand.nextInt(1000000);
@@ -166,7 +167,6 @@ public class TournamentManager {
 
 	public static void start() {
 		running = true;
-		signups = false;
 		signedUp.clear();
 		new BukkitRunnable() {
 			public void run() {
@@ -213,14 +213,15 @@ public class TournamentManager {
 			}
 		}
 		if (id != -1) {
+			final long idf = id;
+			final String plf2 = pl;
 			if (teams_enabled) {
 				pl = getTeamParticipantName(UUID.fromString(pl));
 			}
-			final long idf = id;
 			final String plf = pl;
 			new BukkitRunnable() {
 				public void run() {
-					String csv = plf.equalsIgnoreCase(game.p1) ? "1-0" : "0-1";
+					String csv = plf2.equalsIgnoreCase(game.p1) ? "1-0" : "0-1";
 					post("tournaments/%s/matches/" + idf + ".json", "match[scores_csv]=" + csv + "&match[winner_id]="
 							+ getParticipantID(plf), true);
 					updateMatches();
@@ -265,11 +266,13 @@ public class TournamentManager {
 
 							if (getPlayersForTeam(UUID.fromString(pb.p1)).size() < 1) {
 								onWin(pb.p2, pb);
-								return;
+								pb.end(null);
+								continue;
 							}
 							if (getPlayersForTeam(UUID.fromString(pb.p2)).size() < 1) {
 								onWin(pb.p1, pb);
-								return;
+								pb.end(null);
+								continue;
 							}
 
 							for (Player p : getPlayersForTeam(UUID.fromString(pb.p1))) {
@@ -292,10 +295,12 @@ public class TournamentManager {
 
 							if (Bukkit.getPlayer(p1) == null) {
 								onWin(p2, pb);
+								pb.end(null);
 								continue;
 							}
 							if (Bukkit.getPlayer(p2) == null) {
 								onWin(p1, pb);
+								pb.end(null);
 								continue;
 							}
 
@@ -343,6 +348,32 @@ public class TournamentManager {
 	public static void teamCmd(Player p, String[] args) {
 		String cmd = args[0];
 		String subcmd = cmd.replaceFirst(TEAM_BASE_COMMAND, "");
+
+		if (subcmd.equalsIgnoreCase(TEAM_LIST)) {
+			if (getTeam(p.getName()) == null) {
+				p.sendMessage("§cYou are not in a team!");
+				return;
+			}
+
+			p.sendMessage("§e§oTeam ID: " + getTeam(p.getName()));
+			for (String s : teams.get(getTeam(p.getName()))) {
+				p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
+			}
+		}
+
+		if (subcmd.equalsIgnoreCase(TEAM_LIST_ALL)) {
+			for (Entry<UUID, ArrayList<String>> tems : teams.entrySet()) {
+				p.sendMessage("§e§oTeam ID: " + tems.getKey());
+				for (String s : tems.getValue()) {
+					p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
+				}
+			}
+		}
+
+		if (!signups || !teams_enabled) {
+			p.sendMessage("§cTeams are closed");
+			return;
+		}
 
 		if (cmd.equalsIgnoreCase(TEAM_BASE_COMMAND)) {
 			p.sendMessage("§eCommand list:");
@@ -417,27 +448,6 @@ public class TournamentManager {
 					teams.remove(getTeam(p.getName()));
 				} else
 					teams.get(getTeam(p.getName())).remove(p.getName());
-			}
-		}
-
-		if (subcmd.equalsIgnoreCase(TEAM_LIST)) {
-			if (getTeam(p.getName()) == null) {
-				p.sendMessage("§cYou are not in a team!");
-				return;
-			}
-
-			p.sendMessage("§e§oTeam ID: " + getTeam(p.getName()));
-			for (String s : teams.get(getTeam(p.getName()))) {
-				p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
-			}
-		}
-
-		if (subcmd.equalsIgnoreCase(TEAM_LIST_ALL)) {
-			for (Entry<UUID, ArrayList<String>> tems : teams.entrySet()) {
-				p.sendMessage("§e§oTeam ID: " + tems.getKey());
-				for (String s : tems.getValue()) {
-					p.sendMessage((Bukkit.getPlayer(s) != null ? "§a" : "§c") + "§o" + s);
-				}
 			}
 		}
 
