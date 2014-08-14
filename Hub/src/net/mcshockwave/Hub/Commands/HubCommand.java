@@ -5,8 +5,11 @@ import net.mcshockwave.Hub.ServerSelector;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.Paintball;
 import net.mcshockwave.Hub.Kit.RandomEvent;
+import net.mcshockwave.MCS.Utils.PacketUtils;
+import net.minecraft.server.v1_7_R4.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_7_R4.World;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -70,6 +73,13 @@ public class HubCommand implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("endPaintball")) {
 				for (Paintball pg : Paintball.games) {
 					pg.end(null);
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("dj")) {
+				PacketPlayOutNamedSoundEffect music = new PacketPlayOutNamedSoundEffect(args[1], -33.5, 96, 35.5, 1, 10);
+				for (Player p2 : Bukkit.getOnlinePlayers()) {
+					PacketUtils.sendPacket(p2, music);
 				}
 			}
 		}
