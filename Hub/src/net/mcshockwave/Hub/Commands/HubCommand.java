@@ -77,7 +77,7 @@ public class HubCommand implements CommandExecutor {
 			}
 
 			if (args[0].equalsIgnoreCase("dj")) {
-				PacketPlayOutNamedSoundEffect music = new PacketPlayOutNamedSoundEffect(args[1], -33.5, 96, 35.5, 1, 10);
+				PacketPlayOutNamedSoundEffect music = new PacketPlayOutNamedSoundEffect(args[1], -33.5, 96, 35.5, 4, 1);
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendPacket(p2, music);
 				}
