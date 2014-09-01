@@ -212,6 +212,13 @@ public class DefaultListener implements Listener {
 					PointsUtils.addPoints(p, Integer.parseInt(l3[0]), "beating the Hub parkour!");
 					p.teleport(p.getWorld().getSpawnLocation());
 				}
+
+				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("hear the music!")) {
+					p.setResourcePack("http://mcsw.us/HubMusic.zip");
+				}
+				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("stop the music")) {
+					p.setResourcePack("");
+				}
 			}
 		}
 		if (it.getType() == Material.EYE_OF_ENDER) {
