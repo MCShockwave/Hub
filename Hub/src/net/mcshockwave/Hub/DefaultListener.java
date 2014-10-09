@@ -87,17 +87,17 @@ import org.apache.commons.lang.WordUtils;
 
 public class DefaultListener implements Listener {
 
-	HubPlugin	plugin;
+	HubPlugin plugin;
 
 	public DefaultListener(HubPlugin instance) {
 		plugin = instance;
 	}
 
-	public static HashMap<UUID, LivingEntity>	pets	= new HashMap<>();
+	public static HashMap<UUID, LivingEntity> pets = new HashMap<>();
 
-	Random										rand	= new Random();
+	Random rand = new Random();
 
-	ArrayList<Player>							froz	= new ArrayList<Player>();
+	ArrayList<Player> froz = new ArrayList<Player>();
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -119,7 +119,8 @@ public class DefaultListener implements Listener {
 			}
 		}
 		if (!SQLTable.MynerimItems.has("Username", p.getName())) {
-			SQLTable.MynerimItems.add("Username", p.getName(), "Extra_Shout", "0");
+			SQLTable.MynerimItems.add("Username", p.getName(), "Extra_Shout",
+					"0");
 		}
 
 		if (pets.containsKey(p.getUniqueId())) {
@@ -176,25 +177,30 @@ public class DefaultListener implements Listener {
 		if (SQLTable.hasRank(p.getName(), Rank.JR_MOD)) {
 			c = Color.ORANGE;
 		}
+		if (SQLTable.hasRank(p.getName(), Rank.SR_MOD)) {
+			c = Color.fromRGB(89, 220, 227);
+		}
 		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
 			c = Color.RED;
 		}
 		if (SQLTable.Youtubers.has("Username", p.getName())) {
 			c = Color.fromRGB(128, 0, 0);
 		}
-		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
+		p.getInventory().setHelmet(
+				ItemMetaUtils.setLeatherColor(new ItemStack(
+						Material.LEATHER_HELMET), c));
 	}
 
-	HashMap<Player, Long>							coolBROD	= new HashMap<>();
-	HashMap<Player, Long>							coolSTAR	= new HashMap<>();
-	HashMap<Player, Long>							coolSHEA	= new HashMap<>();
-	HashMap<Player, Long>							coolDISA	= new HashMap<>();
-	HashMap<Player, Long>							coolSHOT	= new HashMap<>();
-	HashMap<Player, Long>							coolDEMO	= new HashMap<>();
-	HashMap<Player, Long>							coolDETO	= new HashMap<>();
-	HashMap<Player, Long>							coolPYRO	= new HashMap<>();
+	HashMap<Player, Long> coolBROD = new HashMap<>();
+	HashMap<Player, Long> coolSTAR = new HashMap<>();
+	HashMap<Player, Long> coolSHEA = new HashMap<>();
+	HashMap<Player, Long> coolDISA = new HashMap<>();
+	HashMap<Player, Long> coolSHOT = new HashMap<>();
+	HashMap<Player, Long> coolDEMO = new HashMap<>();
+	HashMap<Player, Long> coolDETO = new HashMap<>();
+	HashMap<Player, Long> coolPYRO = new HashMap<>();
 
-	public static HashMap<Player, ArrayList<Item>>	demoman		= new HashMap<>();
+	public static HashMap<Player, ArrayList<Item>> demoman = new HashMap<>();
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -206,17 +212,22 @@ public class DefaultListener implements Listener {
 			Block b = event.getClickedBlock();
 			if (b.getType() == Material.WALL_SIGN) {
 				Sign s = (Sign) b.getState();
-				if (s.getLine(0).equalsIgnoreCase("You win!") && s.getLine(1).equalsIgnoreCase("Click here to")
+				if (s.getLine(0).equalsIgnoreCase("You win!")
+						&& s.getLine(1).equalsIgnoreCase("Click here to")
 						&& s.getLine(2).equalsIgnoreCase("get your reward")) {
-					String[] l3 = s.getLine(3).replace("[", "").replace("]", "").split(" ");
-					PointsUtils.addPoints(p, Integer.parseInt(l3[0]), "beating the Hub parkour!");
+					String[] l3 = s.getLine(3).replace("[", "")
+							.replace("]", "").split(" ");
+					PointsUtils.addPoints(p, Integer.parseInt(l3[0]),
+							"beating the Hub parkour!");
 					p.teleport(p.getWorld().getSpawnLocation());
 				}
 
-				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("hear the music!")) {
+				if (s.getLine(1).equalsIgnoreCase("Click here to")
+						&& s.getLine(2).equalsIgnoreCase("hear the music!")) {
 					p.setResourcePack("http://mcsw.us/HubMusic.zip");
 				}
-				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("stop the music")) {
+				if (s.getLine(1).equalsIgnoreCase("Click here to")
+						&& s.getLine(2).equalsIgnoreCase("stop the music")) {
 					p.setResourcePack("");
 				}
 			}
@@ -231,14 +242,16 @@ public class DefaultListener implements Listener {
 		if (isInArena(p)) {
 			if (it.getType() == Material.BOW
 					&& a == Action.LEFT_CLICK_AIR
-					&& (coolSHOT.containsKey(p) && coolSHOT.get(p) <= System.currentTimeMillis() || !coolSHOT
-							.containsKey(p))) {
+					&& (coolSHOT.containsKey(p)
+							&& coolSHOT.get(p) <= System.currentTimeMillis() || !coolSHOT
+								.containsKey(p))) {
 				for (int i = 0; i < 5; i++) {
 					Arrow ar = p.launchProjectile(Arrow.class);
 
 					float mult = 0.3f;
-					Vector v = new Vector(rand.nextGaussian() * mult, rand.nextGaussian() * mult, rand.nextGaussian()
-							* mult);
+					Vector v = new Vector(rand.nextGaussian() * mult,
+							rand.nextGaussian() * mult, rand.nextGaussian()
+									* mult);
 					ar.setVelocity(ar.getVelocity().multiply(1.3).add(v));
 				}
 
@@ -247,12 +260,14 @@ public class DefaultListener implements Listener {
 			}
 
 			if (it.getType() == Material.BLAZE_ROD
-					&& (coolBROD.containsKey(p) && coolBROD.get(p) <= System.currentTimeMillis() || !coolBROD
-							.containsKey(p))) {
+					&& (coolBROD.containsKey(p)
+							&& coolBROD.get(p) <= System.currentTimeMillis() || !coolBROD
+								.containsKey(p))) {
 
 				int ticksLive = 15;
 				for (int i = 0; i < 4; i++) {
-					final SmallFireball fb = p.launchProjectile(SmallFireball.class);
+					final SmallFireball fb = p
+							.launchProjectile(SmallFireball.class);
 					fb.setVelocity(p.getLocation().getDirection().multiply(1));
 					Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 						public void run() {
@@ -266,9 +281,11 @@ public class DefaultListener implements Listener {
 			}
 
 			if (it.getType() == Material.NETHER_STAR
-					&& (coolSTAR.containsKey(p) && coolSTAR.get(p) <= System.currentTimeMillis() || !coolSTAR
-							.containsKey(p))) {
-				final Item i = p.getWorld().dropItem(p.getEyeLocation(), new ItemStack(Material.NETHER_STAR));
+					&& (coolSTAR.containsKey(p)
+							&& coolSTAR.get(p) <= System.currentTimeMillis() || !coolSTAR
+								.containsKey(p))) {
+				final Item i = p.getWorld().dropItem(p.getEyeLocation(),
+						new ItemStack(Material.NETHER_STAR));
 				i.setPickupDelay(Integer.MAX_VALUE);
 				Vector vel = p.getLocation().getDirection();
 				vel.setY(vel.getY() + 0.3f);
@@ -297,17 +314,23 @@ public class DefaultListener implements Listener {
 			if (it.getType() == Material.SHEARS
 					&& a.name().contains("RIGHT_CLICK")
 					&& p.hasPotionEffect(PotionEffectType.INVISIBILITY)
-					&& (coolSHEA.containsKey(p) && coolSHEA.get(p) <= System.currentTimeMillis() || !coolSHEA
-							.containsKey(p))) {
+					&& (coolSHEA.containsKey(p)
+							&& coolSHEA.get(p) <= System.currentTimeMillis() || !coolSHEA
+								.containsKey(p))) {
 				p.removePotionEffect(PotionEffectType.INVISIBILITY);
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 110, 1));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 110, 0));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 110, -10));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 110,
+						1));
+				p.addPotionEffect(new PotionEffect(
+						PotionEffectType.INCREASE_DAMAGE, 110, 0));
+				p.addPotionEffect(new PotionEffect(
+						PotionEffectType.DAMAGE_RESISTANCE, 110, -10));
 
 				Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 					public void run() {
 						if (isInArena(p)) {
-							p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
+							p.addPotionEffect(new PotionEffect(
+									PotionEffectType.INVISIBILITY,
+									Integer.MAX_VALUE, 0));
 						}
 					}
 				}, 100);
@@ -317,27 +340,30 @@ public class DefaultListener implements Listener {
 			}
 
 			if (it.getType() == Material.GLOWSTONE_DUST
-					&& (coolDISA.containsKey(p) && coolDISA.get(p) <= System.currentTimeMillis() || !coolDISA
-							.containsKey(p))) {
+					&& (coolDISA.containsKey(p)
+							&& coolDISA.get(p) <= System.currentTimeMillis() || !coolDISA
+								.containsKey(p))) {
 				for (int i = 0; i < 5; i++) {
-					PacketUtils
-							.playBlockParticles(Material.GLOWSTONE, 0, LocUtils.addRand(p.getEyeLocation(), 5, 5, 5));
+					PacketUtils.playBlockParticles(Material.GLOWSTONE, 0,
+							LocUtils.addRand(p.getEyeLocation(), 5, 5, 5));
 				}
 
 				for (Entity e : p.getNearbyEntities(5, 5, 5)) {
 					if (e instanceof Player) {
 						final Player np = (Player) e;
 
-						if (p.getItemInHand() != null && p.getItemInHand().getType() != Material.AIR) {
+						if (p.getItemInHand() != null
+								&& p.getItemInHand().getType() != Material.AIR) {
 							final int sl = np.getInventory().getHeldItemSlot();
 							final ItemStack iih = np.getItemInHand().clone();
 							np.setItemInHand(null);
 
-							Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-								public void run() {
-									np.getInventory().setItem(sl, iih);
-								}
-							}, 40);
+							Bukkit.getScheduler().runTaskLater(plugin,
+									new Runnable() {
+										public void run() {
+											np.getInventory().setItem(sl, iih);
+										}
+									}, 40);
 						}
 					}
 				}
@@ -354,11 +380,14 @@ public class DefaultListener implements Listener {
 				coolDISA.put(p, System.currentTimeMillis() + 5000);
 			}
 
-			if (it.getType() == Material.IRON_BARDING || it.getType() == Material.GOLD_BARDING) {
+			if (it.getType() == Material.IRON_BARDING
+					|| it.getType() == Material.GOLD_BARDING) {
 				if (a.name().contains("LEFT_CLICK")
 						&& demoman.containsKey(p)
-						&& (coolDETO.containsKey(p) && coolDETO.get(p) <= System.currentTimeMillis() || !coolDETO
-								.containsKey(p))) {
+						&& (coolDETO.containsKey(p)
+								&& coolDETO.get(p) <= System
+										.currentTimeMillis() || !coolDETO
+									.containsKey(p))) {
 
 					SchedulerUtils ut = SchedulerUtils.getNew();
 					ut.add(p);
@@ -373,11 +402,13 @@ public class DefaultListener implements Listener {
 						final Item i = i2;
 						ut.add(new Runnable() {
 							public void run() {
-								i.getWorld().createExplosion(i.getLocation(), 3f);
+								i.getWorld().createExplosion(i.getLocation(),
+										3f);
 
 								for (Entity e : i.getNearbyEntities(3, 3, 3)) {
 									if (e instanceof LivingEntity) {
-										((LivingEntity) e).damage(rand.nextInt(10) + 5f, p);
+										((LivingEntity) e).damage(
+												rand.nextInt(10) + 5f, p);
 									}
 								}
 
@@ -397,10 +428,13 @@ public class DefaultListener implements Listener {
 				}
 
 				if (a.name().contains("RIGHT_CLICK")
-						&& (coolDEMO.containsKey(p) && coolDEMO.get(p) <= System.currentTimeMillis() || !coolDEMO
-								.containsKey(p))) {
+						&& (coolDEMO.containsKey(p)
+								&& coolDEMO.get(p) <= System
+										.currentTimeMillis() || !coolDEMO
+									.containsKey(p))) {
 
-					Item i = p.getWorld().dropItem(p.getEyeLocation(), new ItemStack(Material.TNT));
+					Item i = p.getWorld().dropItem(p.getEyeLocation(),
+							new ItemStack(Material.TNT));
 					i.setPickupDelay(Integer.MAX_VALUE);
 					i.setFireTicks(10);
 					Vector vel = p.getLocation().getDirection().multiply(1.5);
@@ -420,16 +454,21 @@ public class DefaultListener implements Listener {
 			}
 
 			if (it.getType() == Material.FLINT_AND_STEEL
-					&& (coolPYRO.containsKey(p) && coolPYRO.get(p) <= System.currentTimeMillis() || !coolPYRO
-							.containsKey(p))) {
+					&& (coolPYRO.containsKey(p)
+							&& coolPYRO.get(p) <= System.currentTimeMillis() || !coolPYRO
+								.containsKey(p))) {
 				for (Entity e : p.getNearbyEntities(5, 5, 5)) {
 					e.setFireTicks(e.getFireTicks() + 100);
-					PacketUtils.playParticleEffect(ParticleEffect.FLAME, e.getLocation(), 0, 0.3f, 15);
-					PacketUtils.playParticleEffect(ParticleEffect.LAVA, e.getLocation(), 0, 0.3f, 15);
+					PacketUtils.playParticleEffect(ParticleEffect.FLAME,
+							e.getLocation(), 0, 0.3f, 15);
+					PacketUtils.playParticleEffect(ParticleEffect.LAVA,
+							e.getLocation(), 0, 0.3f, 15);
 				}
 
-				PacketUtils.playParticleEffect(ParticleEffect.FLAME, p.getLocation(), 0, 0.3f, 15);
-				PacketUtils.playParticleEffect(ParticleEffect.LAVA, p.getLocation(), 0, 0.3f, 15);
+				PacketUtils.playParticleEffect(ParticleEffect.FLAME,
+						p.getLocation(), 0, 0.3f, 15);
+				PacketUtils.playParticleEffect(ParticleEffect.LAVA,
+						p.getLocation(), 0, 0.3f, 15);
 
 				coolPYRO.remove(p);
 				coolPYRO.put(p, System.currentTimeMillis() + 3000);
@@ -440,10 +479,11 @@ public class DefaultListener implements Listener {
 			}
 		}
 
-		final Material[] ms = { Material.COOKED_CHICKEN, Material.BOW, Material.BEACON, Material.DISPENSER,
-				Material.ENDER_PEARL };
+		final Material[] ms = { Material.COOKED_CHICKEN, Material.BOW,
+				Material.BEACON, Material.DISPENSER, Material.ENDER_PEARL };
 
-		if (p.getGameMode() != GameMode.CREATIVE && !(Arrays.asList(ms).contains(it.getType()))
+		if (p.getGameMode() != GameMode.CREATIVE
+				&& !(Arrays.asList(ms).contains(it.getType()))
 				&& event.getAction() != Action.PHYSICAL) {
 			event.setCancelled(true);
 		} else
@@ -466,11 +506,14 @@ public class DefaultListener implements Listener {
 			if (TournamentManager.signups) {
 				if (TournamentManager.teams_enabled) {
 					if (TournamentManager.getTeam(p.getName()) == null
-							|| TournamentManager.teams.get(TournamentManager.getTeam(p.getName())).indexOf(p.getName()) != 0) {
+							|| TournamentManager.teams.get(
+									TournamentManager.getTeam(p.getName()))
+									.indexOf(p.getName()) != 0) {
 						p.sendMessage("§cYou are not the leader of the team or you are not in a team");
 						return;
 					}
-					TournamentManager.signupTeam(TournamentManager.getTeam(p.getName()));
+					TournamentManager.signupTeam(TournamentManager.getTeam(p
+							.getName()));
 				} else
 					TournamentManager.signupPlayer(p.getName());
 			} else {
@@ -479,7 +522,8 @@ public class DefaultListener implements Listener {
 			event.setCancelled(true);
 		}
 
-		if (msg.toLowerCase().startsWith(TournamentManager.TEAM_BASE_COMMAND.toLowerCase())) {
+		if (msg.toLowerCase().startsWith(
+				TournamentManager.TEAM_BASE_COMMAND.toLowerCase())) {
 			TournamentManager.teamCmd(p, args);
 			event.setCancelled(true);
 		}
@@ -490,11 +534,11 @@ public class DefaultListener implements Listener {
 		event.getEntity().remove();
 	}
 
-	public static HashMap<Player, Block>			medic		= new HashMap<>();
-	public static HashMap<Player, SchedulerUtils>	medicTask	= new HashMap<>();
+	public static HashMap<Player, Block> medic = new HashMap<>();
+	public static HashMap<Player, SchedulerUtils> medicTask = new HashMap<>();
 
-	public static HashMap<Player, Block>			engineer	= new HashMap<>();
-	public static HashMap<Player, SchedulerUtils>	turretTask	= new HashMap<>();
+	public static HashMap<Player, Block> engineer = new HashMap<>();
+	public static HashMap<Player, SchedulerUtils> turretTask = new HashMap<>();
 
 	public boolean isInTube(Location l) {
 		return false;
@@ -508,7 +552,8 @@ public class DefaultListener implements Listener {
 		final Block b = event.getBlock();
 
 		if (p.getGameMode() != GameMode.CREATIVE
-				&& p.getWorld().getSpawnLocation().distanceSquared(p.getLocation()) < 200 * 200) {
+				&& p.getWorld().getSpawnLocation()
+						.distanceSquared(p.getLocation()) < 200 * 200) {
 			if (b.getType() == Material.BEACON) {
 				event.setCancelled(true);
 
@@ -557,21 +602,26 @@ public class DefaultListener implements Listener {
 							if (disSq < minDis * minDis) {
 								Location pl = p.getEyeLocation().add(0, -1, 0);
 
-								Vector pv = new Vector(pl.getX(), pl.getY(), pl.getZ());
-								Vector bv = new Vector(bl.getX(), bl.getY(), bl.getZ());
+								Vector pv = new Vector(pl.getX(), pl.getY(), pl
+										.getZ());
+								Vector bv = new Vector(bl.getX(), bl.getY(), bl
+										.getZ());
 
 								Vector fv = bv.subtract(pv).multiply(0.1);
 
 								pl.add(fv);
 								for (int i = 0; i < 100; i++) {
 									pl.add(fv);
-									PacketUtils.playParticleEffect(ParticleEffect.HEART, pl, 0.05f, 1, 1);
+									PacketUtils.playParticleEffect(
+											ParticleEffect.HEART, pl, 0.05f, 1,
+											1);
 									if (pl.distanceSquared(bl) < 1) {
 										break;
 									}
 								}
 
-								p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 3));
+								p.addPotionEffect(new PotionEffect(
+										PotionEffectType.REGENERATION, 100, 3));
 							}
 						}
 					});
@@ -581,13 +631,15 @@ public class DefaultListener implements Listener {
 					public void run() {
 						medic.remove(p);
 						bl.getBlock().setType(Material.AIR);
-						bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
+						bl.getBlock().getRelative(BlockFace.DOWN)
+								.setType(Material.AIR);
 					}
 				});
 				sc.add(200);
 				sc.add(new Runnable() {
 					public void run() {
-						p.getInventory().addItem(new ItemStack(Material.BEACON));
+						p.getInventory()
+								.addItem(new ItemStack(Material.BEACON));
 						medicTask.remove(p);
 					}
 				});
@@ -629,7 +681,8 @@ public class DefaultListener implements Listener {
 
 				final Location bl = b.getLocation().add(0.5, 1.5, 0.5);
 
-				final Item ne = bl.getWorld().dropItem(bl, new ItemStack(Material.ARROW));
+				final Item ne = bl.getWorld().dropItem(bl,
+						new ItemStack(Material.ARROW));
 				ne.setPickupDelay(Integer.MAX_VALUE);
 				ne.remove();
 
@@ -647,23 +700,33 @@ public class DefaultListener implements Listener {
 						public void run() {
 							ne.teleport(bl);
 
-							for (Entity e : ne.getNearbyEntities(minDis, minDis, minDis)) {
+							for (Entity e : ne.getNearbyEntities(minDis,
+									minDis, minDis)) {
 								if (e instanceof Player && e != p) {
 									Player p2 = (Player) e;
 
-									p2.getWorld().playSound(bl, Sound.SHOOT_ARROW, 1, 1);
+									p2.getWorld().playSound(bl,
+											Sound.SHOOT_ARROW, 1, 1);
 
 									Location pl = p2.getEyeLocation();
 
-									Vector pv = new Vector(pl.getX(), pl.getY(), pl.getZ());
-									Vector bv = new Vector(bl.getX(), bl.getY(), bl.getZ());
+									Vector pv = new Vector(pl.getX(),
+											pl.getY(), pl.getZ());
+									Vector bv = new Vector(bl.getX(),
+											bl.getY(), bl.getZ());
 
 									Vector fv = pv.subtract(bv);
 
-									Arrow a = p2.getWorld().spawnArrow(bl.clone().add(fv.clone().multiply(0.3)),
-											fv.clone().add(new Vector(0, 0.1, 0)), 2f, 20f);
+									Arrow a = p2.getWorld().spawnArrow(
+											bl.clone().add(
+													fv.clone().multiply(0.3)),
+											fv.clone().add(
+													new Vector(0, 0.1, 0)), 2f,
+											20f);
 									a.setShooter(p);
-									a.setMetadata("TurretArrow", new FixedMetadataValue(plugin, true));
+									a.setMetadata(
+											"TurretArrow",
+											new FixedMetadataValue(plugin, true));
 
 									break;
 								}
@@ -676,14 +739,16 @@ public class DefaultListener implements Listener {
 					public void run() {
 						engineer.remove(p);
 						bl.getBlock().setType(Material.AIR);
-						bl.getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);
+						bl.getBlock().getRelative(BlockFace.DOWN)
+								.setType(Material.AIR);
 					}
 				});
 				sc.add(300);
 				sc.add(new Runnable() {
 					public void run() {
 						if (p.getWorld().getEnvironment() == Environment.THE_END) {
-							p.getInventory().addItem(new ItemStack(Material.DISPENSER));
+							p.getInventory().addItem(
+									new ItemStack(Material.DISPENSER));
 						}
 						turretTask.remove(p);
 					}
@@ -717,18 +782,11 @@ public class DefaultListener implements Listener {
 	}
 
 	public static enum Currency {
-		Points(
-			SQLTable.Points,
-			"Points"),
-		Credits(
-			SQLTable.Zombiez,
-			"Credits"),
-		XP(
-			SQLTable.Level,
-			"XP");
+		Points(SQLTable.Points, "Points"), Credits(SQLTable.Zombiez, "Credits"), XP(
+				SQLTable.Level, "XP");
 
-		public String	column;
-		public SQLTable	table;
+		public String column;
+		public SQLTable table;
 
 		Currency(SQLTable table, String column) {
 			this.column = column;
@@ -758,13 +816,15 @@ public class DefaultListener implements Listener {
 				}
 
 				if (petType != null) {
-					LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), petType);
+					LivingEntity pet = (LivingEntity) p.getWorld().spawnEntity(
+							p.getLocation(), petType);
 					pet.setCustomNameVisible(true);
 					pet.setCustomName(p.getName()
 							+ (p.getName().endsWith("s") ? "'" : "'s")
 							+ " "
-							+ (petType == EntityType.OCELOT ? "Cat" : WordUtils.capitalizeFully(petType.name().replace(
-									'_', ' '))));
+							+ (petType == EntityType.OCELOT ? "Cat" : WordUtils
+									.capitalizeFully(petType.name().replace(
+											'_', ' '))));
 					PetMaker.makePet(pet, p.getUniqueId());
 
 					if (pet instanceof Ocelot) {
@@ -782,7 +842,8 @@ public class DefaultListener implements Listener {
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.getEntity().getType() == EntityType.VILLAGER && event.getCause() != DamageCause.MAGIC) {
+		if (event.getEntity().getType() == EntityType.VILLAGER
+				&& event.getCause() != DamageCause.MAGIC) {
 			event.setCancelled(true);
 		}
 
@@ -792,7 +853,8 @@ public class DefaultListener implements Listener {
 		}
 
 		if (event.getEntityType() == EntityType.PLAYER) {
-			if (!isInArena(event.getEntity()) || event.getCause().name().contains("EXPLOSION")) {
+			if (!isInArena(event.getEntity())
+					|| event.getCause().name().contains("EXPLOSION")) {
 				event.setCancelled(true);
 			} else {
 				resetDurability((Player) event.getEntity());
@@ -827,7 +889,8 @@ public class DefaultListener implements Listener {
 				}
 
 				if (it.getType() == Material.GOLD_AXE) {
-					event.setDamage(event.getDamage() + (p.getFireTicks() > 0 ? 2 : 0));
+					event.setDamage(event.getDamage()
+							+ (p.getFireTicks() > 0 ? 2 : 0));
 				}
 			}
 		}
@@ -887,13 +950,14 @@ public class DefaultListener implements Listener {
 		event.getPlayer().setFoodLevel(20);
 
 		Block b = event.getTo().getBlock().getRelative(BlockFace.DOWN);
-		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && b.getType() == Material.SANDSTONE
-				&& b.getData() == 2) {
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE
+				&& b.getType() == Material.SANDSTONE && b.getData() == 2) {
 			event.setTo(LoungeCommand.vecToLoc(event.getTo().getWorld()));
 		}
 
 		if (TrailCommand.using.contains(p)) {
-			PacketUtils.playParticleEffect(ParticleEffect.FLAME, p.getLocation(), 0.3f, 0.05f, 3);
+			PacketUtils.playParticleEffect(ParticleEffect.FLAME,
+					p.getLocation(), 0.3f, 0.05f, 3);
 		}
 
 		// if (rand.nextInt(10000) == 0 && isInArena(p)) {
@@ -908,7 +972,8 @@ public class DefaultListener implements Listener {
 	public static boolean sameCoords(PlayerMoveEvent event) {
 		Location t = event.getTo();
 		Location f = event.getFrom();
-		if (f.getX() == t.getX() && f.getY() == t.getY() && f.getZ() == t.getZ()) {
+		if (f.getX() == t.getX() && f.getY() == t.getY()
+				&& f.getZ() == t.getZ()) {
 			return true;
 		}
 		return false;
@@ -919,7 +984,8 @@ public class DefaultListener implements Listener {
 		Player p = event.getPlayer();
 		Item i = event.getItem();
 		ItemStack it = i.getItemStack();
-		if (ItemMetaUtils.hasCustomName(it) && ItemMetaUtils.getItemName(it).equalsIgnoreCase("BoomItem")) {
+		if (ItemMetaUtils.hasCustomName(it)
+				&& ItemMetaUtils.getItemName(it).equalsIgnoreCase("BoomItem")) {
 			i.remove();
 			p.getWorld().playSound(p.getLocation(), Sound.EXPLODE, 3, 1);
 			p.setVelocity(p.getVelocity().add(new Vector(0, 3, 0)));
@@ -941,7 +1007,8 @@ public class DefaultListener implements Listener {
 			if (isInArena(p)) {
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					if (isInArena(p2)) {
-						p2.sendMessage("§7[§e§lPVP§7]§f " + event.getDeathMessage());
+						p2.sendMessage("§7[§e§lPVP§7]§f "
+								+ event.getDeathMessage());
 					}
 				}
 			}
@@ -994,8 +1061,10 @@ public class DefaultListener implements Listener {
 					}
 				}, 10l);
 
-				p.getInventory().setItem(8,
-						ItemMetaUtils.setItemName(new ItemStack(Material.BOOK), "Kit Selector §e(Right click)"));
+				p.getInventory().setItem(
+						8,
+						ItemMetaUtils.setItemName(new ItemStack(Material.BOOK),
+								"Kit Selector §e(Right click)"));
 			}
 		}
 	}
@@ -1005,7 +1074,8 @@ public class DefaultListener implements Listener {
 
 		if (!Kit.gunmode) {
 			for (ItemStack it : pi.getContents()) {
-				if (it != null && it.getType() != Material.AIR && it.getType().getMaxDurability() > 16) {
+				if (it != null && it.getType() != Material.AIR
+						&& it.getType().getMaxDurability() > 16) {
 					if (it.getDurability() > 0) {
 						it.setDurability((short) 0);
 					}
@@ -1025,13 +1095,14 @@ public class DefaultListener implements Listener {
 
 	public static void resetPlayerInv(Player p) {
 		p.getInventory().setArmorContents(null);
-		if (SQLTable.hasRank(p.getName(), Rank.IRON) || SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
+		if (SQLTable.hasRank(p.getName(), Rank.IRON)
+				|| SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
 			giveHelm(p);
 		}
 		p.getInventory().clear();
 		p.getInventory().addItem(
-				ItemMetaUtils.setItemName(new ItemStack(Material.EYE_OF_ENDER), ChatColor.BLUE
-						+ "MCShockwave Servers (Right click)"));
+				ItemMetaUtils.setItemName(new ItemStack(Material.EYE_OF_ENDER),
+						ChatColor.BLUE + "MCShockwave Servers (Right click)"));
 		Kit.clearPE(p);
 	}
 
@@ -1069,12 +1140,15 @@ public class DefaultListener implements Listener {
 	public ItemMenu getMenuMG() {
 		ItemMenu mg = new ItemMenu("MCMinigames Servers", 9);
 
-		Button mg1 = new Button(true, Material.DIAMOND_SWORD, 1, 0, "MCMinigames Server 1", "Click to join server", "",
-				"Players: " + MCShockwave.getPlayerCount("MG1") + " / 30");
-		Button mg2 = new Button(true, Material.DIAMOND_SWORD, 2, 0, "MCMinigames Server 2", "Click to join server", "",
-				"Players: " + MCShockwave.getPlayerCount("MG2") + " / 30");
-		Button mg3 = new Button(true, Material.DIAMOND_SWORD, 3, 0, "MCMinigames Server 3", "Click to join server", "",
-				"Players: " + MCShockwave.getPlayerCount("MG3") + " / 30");
+		Button mg1 = new Button(true, Material.DIAMOND_SWORD, 1, 0,
+				"MCMinigames Server 1", "Click to join server", "", "Players: "
+						+ MCShockwave.getPlayerCount("MG1") + " / 30");
+		Button mg2 = new Button(true, Material.DIAMOND_SWORD, 2, 0,
+				"MCMinigames Server 2", "Click to join server", "", "Players: "
+						+ MCShockwave.getPlayerCount("MG2") + " / 30");
+		Button mg3 = new Button(true, Material.DIAMOND_SWORD, 3, 0,
+				"MCMinigames Server 3", "Click to join server", "", "Players: "
+						+ MCShockwave.getPlayerCount("MG3") + " / 30");
 
 		mg1.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent e) {
@@ -1102,13 +1176,16 @@ public class DefaultListener implements Listener {
 	public ItemMenu getMenuStaff() {
 		ItemMenu st = new ItemMenu("Staff Servers", 9);
 
-		Button build = new Button(true, Material.GRASS, 1, 0, "Building Server", "Click to join server",
-				"§cBUILDERS ONLY", "", "Players: " + MCShockwave.getPlayerCount("build") + " / -");
-		Button test = new Button(true, Material.DIAMOND, 1, 0, "Testing Server", "Click to join server",
-				"§cBUILDERS ONLY", "", "Players: " + MCShockwave.getPlayerCount("test") + " / -");
-		Button event = new Button(true, Material.GOLDEN_APPLE, 1, 1, "Event Server", "Click to join server",
-				"Note: only open when we", "are doing an event!", "", "Players: " + MCShockwave.getPlayerCount("event")
-						+ " / -");
+		Button build = new Button(true, Material.GRASS, 1, 0,
+				"Building Server", "Click to join server", "§cBUILDERS ONLY",
+				"", "Players: " + MCShockwave.getPlayerCount("build") + " / -");
+		Button test = new Button(true, Material.DIAMOND, 1, 0,
+				"Testing Server", "Click to join server", "§cBUILDERS ONLY",
+				"", "Players: " + MCShockwave.getPlayerCount("test") + " / -");
+		Button event = new Button(true, Material.GOLDEN_APPLE, 1, 1,
+				"Event Server", "Click to join server",
+				"Note: only open when we", "are doing an event!", "",
+				"Players: " + MCShockwave.getPlayerCount("event") + " / -");
 
 		build.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent e) {
@@ -1136,8 +1213,9 @@ public class DefaultListener implements Listener {
 	public ItemMenu getMenuMSG() {
 		ItemMenu sg = new ItemMenu("Mynerim SG", 9);
 
-		Button sg1 = new Button(true, Material.DRAGON_EGG, 1, 0, "Mynerim SG", "Click to join server", "", "Players: "
-				+ MCShockwave.getPlayerCount("mynerim") + " / 32");
+		Button sg1 = new Button(true, Material.DRAGON_EGG, 1, 0, "Mynerim SG",
+				"Click to join server", "", "Players: "
+						+ MCShockwave.getPlayerCount("mynerim") + " / 32");
 
 		sg1.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
@@ -1153,8 +1231,9 @@ public class DefaultListener implements Listener {
 	public ItemMenu getMenuZTD() {
 		ItemMenu ztd = new ItemMenu("Zombiez TD", 9);
 
-		Button ztd1 = new Button(true, Material.ROTTEN_FLESH, 1, 0, "Zombiez TD", "Click to join server", "",
-				"Players: " + MCShockwave.getPlayerCount("ZTD") + " / 50");
+		Button ztd1 = new Button(true, Material.ROTTEN_FLESH, 1, 0,
+				"Zombiez TD", "Click to join server", "", "Players: "
+						+ MCShockwave.getPlayerCount("ZTD") + " / 50");
 
 		ztd1.setOnClick(new ButtonRunnable() {
 			public void run(Player p, InventoryClickEvent event) {
@@ -1165,23 +1244,22 @@ public class DefaultListener implements Listener {
 		ztd.addButton(ztd1, 4);
 
 		return ztd;
+
+		/*
+		 * public ItemMenu getMenuBB() { ItemMenu bb = new
+		 * ItemMenu("Battle Bane", 9);
+		 * 
+		 * Button bb1 = new Button(true, Material.NETHER_STAR, 1, 0,
+		 * "Battle Bane", "Click to join server", "", "Players: " +
+		 * MCShockwave.getPlayerCount("bane") + " / 80");
+		 * 
+		 * bb1.setOnClick(new ButtonRunnable() { public void run(Player p,
+		 * InventoryClickEvent event) { MCShockwave.connectToServer(p, "bane",
+		 * "Battle Bane"); } });
+		 * 
+		 * bb.addButton(bb1, 4);
+		 * 
+		 * return bb; }
+		 */
 	}
-
-	public ItemMenu getMenuBB() {
-		ItemMenu bb = new ItemMenu("Battle Bane", 9);
-
-		Button bb1 = new Button(true, Material.NETHER_STAR, 1, 0, "Battle Bane", "Click to join server", "",
-				"Players: " + MCShockwave.getPlayerCount("bane") + " / 80");
-
-		bb1.setOnClick(new ButtonRunnable() {
-			public void run(Player p, InventoryClickEvent event) {
-				MCShockwave.connectToServer(p, "bane", "Battle Bane");
-			}
-		});
-
-		bb.addButton(bb1, 4);
-
-		return bb;
-	}
-
 }
