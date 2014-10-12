@@ -108,6 +108,9 @@ public class DefaultListener implements Listener {
 		p.setSaturation(2);
 		p.setGameMode(GameMode.ADVENTURE);
 		resetPlayerInv(p);
+		if (MCShockwave.pointmult > 1 || MCShockwave.xpmult > 1) {
+			MCShockwave.send(ChatColor.AQUA, p, ChatColor.BOLD + "Network Multipliers are currently %s!", "§lactive§r§7");
+		}
 	}
 
 	@EventHandler
@@ -1032,6 +1035,19 @@ public class DefaultListener implements Listener {
 			giveHelm(p);
 		}
 		p.getInventory().clear();
+		int o = 0;
+		if (SQLTable.MiscItems.has("Username", p.getName())) {
+			o = SQLTable.MiscItems.getInt("Username", p.getName(), "Red_Boots");
+		} else {
+			SQLTable.MiscItems.add("Username", p.getName());
+		}
+		if (o == 1) {
+			ItemStack it = new ItemStack(Material.LEATHER_BOOTS);
+			ItemMetaUtils.setLeatherColor(it, Color.RED);
+			ItemMetaUtils.setItemName(it, ChatColor.RED + "Red Boots!!");
+			p.getInventory().setBoots(it);
+			p.getInventory().setBoots(it);
+		}
 		p.getInventory().addItem(
 				ItemMetaUtils.setItemName(new ItemStack(Material.EYE_OF_ENDER), ChatColor.BLUE
 						+ "MCShockwave Servers (Right click)"));
