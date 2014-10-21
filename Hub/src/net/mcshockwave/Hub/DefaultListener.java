@@ -19,6 +19,8 @@ import net.mcshockwave.MCS.Utils.PacketUtils;
 import net.mcshockwave.MCS.Utils.PacketUtils.ParticleEffect;
 import net.mcshockwave.MCS.Utils.PetMaker;
 import net.mcshockwave.MCS.Utils.SchedulerUtils;
+import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
+import net.minecraft.util.com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,6 +67,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -75,6 +78,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -1202,4 +1206,19 @@ public class DefaultListener implements Listener {
 		 * return bb; }
 		 */
 	}
+	
+	@EventHandler
+	public void PlayerIPHandler(PlayerLoginEvent e) {
+		final Player p = e.getPlayer();
+		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
+			return;
+		}
+		new BukkitRunnable() {
+			public void run() {
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("IP");
+				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
+			}
+		}.runTaskLater(MCShockwave.instance, 1L);
+	}	
 }
