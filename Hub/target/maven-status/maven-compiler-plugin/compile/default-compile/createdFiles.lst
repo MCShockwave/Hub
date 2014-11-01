@@ -25,6 +25,7 @@ net\mcshockwave\Hub\Kit\RandomEvent.class
 net\mcshockwave\Hub\Kit\TournamentManager$4.class
 net\mcshockwave\Hub\Kit\Paintball$4.class
 net\mcshockwave\Hub\DefaultListener$9.class
+net\mcshockwave\Hub\DefaultListener$25.class
 net\mcshockwave\Hub\Commands\TrailCommand.class
 net\mcshockwave\Hub\Kit\RandomEvent$9.class
 net\mcshockwave\Hub\Kit\RandomEvent$5.class

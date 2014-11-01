@@ -1,5 +1,6 @@
 package net.mcshockwave.Hub;
 
+import net.mcshockwave.Guns.Gun;
 import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
@@ -113,7 +114,8 @@ public class DefaultListener implements Listener {
 		p.setGameMode(GameMode.ADVENTURE);
 		resetPlayerInv(p);
 		if (MCShockwave.pointmult > 1 || MCShockwave.xpmult > 1) {
-			MCShockwave.send(ChatColor.AQUA, p, ChatColor.BOLD + "Network Multipliers are currently %s!", "§lactive§r§7");
+			MCShockwave.send(ChatColor.AQUA, p, ChatColor.BOLD + "Network Multipliers are currently %s!",
+					"§lactive§r§7");
 		}
 	}
 
@@ -1013,12 +1015,10 @@ public class DefaultListener implements Listener {
 	public static void resetDurability(Player p) {
 		PlayerInventory pi = p.getInventory();
 
-		if (!Kit.gunmode) {
-			for (ItemStack it : pi.getContents()) {
-				if (it != null && it.getType() != Material.AIR && it.getType().getMaxDurability() > 16) {
-					if (it.getDurability() > 0) {
-						it.setDurability((short) 0);
-					}
+		for (ItemStack it : pi.getContents()) {
+			if (it != null && it.getType() != Material.AIR && Gun.fromItem(it) == null) {
+				if (it.getDurability() > 0) {
+					it.setDurability((short) 0);
 				}
 			}
 		}
@@ -1206,7 +1206,7 @@ public class DefaultListener implements Listener {
 		 * return bb; }
 		 */
 	}
-	
+
 	@EventHandler
 	public void PlayerIPHandler(PlayerLoginEvent e) {
 		final Player p = e.getPlayer();
@@ -1220,5 +1220,5 @@ public class DefaultListener implements Listener {
 				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
 			}
 		}.runTaskLater(MCShockwave.instance, 1L);
-	}	
+	}
 }
