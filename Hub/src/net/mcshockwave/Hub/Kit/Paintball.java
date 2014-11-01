@@ -188,8 +188,6 @@ public class Paintball implements Listener {
 		p.teleport(getCenter());
 		p.getInventory().clear();
 
-		p.setAllowFlight(true);
-
 		MCShockwave.send(ChatColor.DARK_AQUA, p, "Now %s", "spectating");
 	}
 
@@ -204,8 +202,6 @@ public class Paintball implements Listener {
 
 		p.teleport(HubPlugin.dW().getSpawnLocation());
 		DefaultListener.resetPlayerInv(p);
-
-		p.setAllowFlight(false);
 
 		MCShockwave.send(ChatColor.DARK_AQUA, p, "No longer %s", "spectating");
 	}
