@@ -1075,6 +1075,9 @@ public class Paintball implements Listener {
 							pg.addToQueue(p.getName());
 						} else if (pg.state == STARTED) {
 							for (Paintball pg : games) {
+								if (pg.getPlayers(false).contains(p)) {
+									return;
+								}
 								if (pg.specs.contains(p.getName())) {
 									pg.removeSpectator(p);
 								}
