@@ -1220,23 +1220,5 @@ public class DefaultListener implements Listener {
 		 * 
 		 * return bb; }
 		 */
-<<<<<<< HEAD
-=======
-	}
-
-	@EventHandler
-	public void PlayerIPHandler(PlayerLoginEvent e) {
-		final Player p = e.getPlayer();
-		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
-			return;
-		}
-		new BukkitRunnable() {
-			public void run() {
-				ByteArrayDataOutput out = ByteStreams.newDataOutput();
-				out.writeUTF("IP");
-				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
-			}
-		}.runTaskLater(MCShockwave.instance, 3L);
->>>>>>> refs/remotes/origin/master
 	}
 }
