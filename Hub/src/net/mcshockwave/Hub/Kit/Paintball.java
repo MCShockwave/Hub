@@ -25,6 +25,7 @@ import net.minecraft.server.v1_7_R4.PacketPlayOutEntityDestroy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -332,7 +333,7 @@ public class Paintball implements Listener {
 					if (bombPlanted == null) {
 						for (Player p : getPlayers(grnBomb ? green : yellow)) {
 							if (p.getInventory().contains(Material.TNT)) {
-								playBlockDustParticles(Material.TNT, 0, p.getEyeLocation(), 0.3f, 0.1f);
+								p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.TNT);
 								if (p.getLocation().distanceSquared(getCenter()) < 3 * 3) {
 									double maxProg = 5;
 									if (++plantProgress >= maxProg) {
@@ -403,7 +404,7 @@ public class Paintball implements Listener {
 				public void run() {
 					for (Player p : getPlayers(green)) {
 						if (p.getInventory().contains(Material.WOOL)) {
-							playBlockDustParticles(Material.WOOL, 4, p.getEyeLocation(), 0.3f, 0.1f);
+							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.WOOL, 4);
 							if (getGreenSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(5)) {
 								MCShockwave.broadcast(ChatColor.DARK_GREEN, "%s has won a game of paintball!", "Green");
 								end("Green");
@@ -413,7 +414,7 @@ public class Paintball implements Listener {
 					}
 					for (Player p : getPlayers(yellow)) {
 						if (p.getInventory().contains(Material.WOOL)) {
-							playBlockDustParticles(Material.WOOL, 5, p.getEyeLocation(), 0.3f, 0.1f);
+							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.WOOL, 5);
 							if (getYellowSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(4)) {
 								MCShockwave.broadcast(ChatColor.YELLOW, "%s has won a game of paintball!", "Yellow");
 								end("Yellow");
@@ -462,7 +463,7 @@ public class Paintball implements Listener {
 
 					for (Player p : getPlayers()) {
 						if (p.getInventory().contains(Material.TNT)) {
-							playBlockDustParticles(Material.TNT, 0, p.getEyeLocation(), 0.3f, 0.1f);
+							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.TNT);
 						}
 					}
 				}
@@ -915,10 +916,12 @@ public class Paintball implements Listener {
 			p.playSound(l, s, volume, pitch);
 	}
 
-	public void playBlockDustParticles(Material m, int data, Location l, float rad, float spd) {
-		for (Player p : getPlayers())
-			PacketUtils.sendPacket(p, PacketUtils.generateBlockDustParticles(m, data, l, rad, spd));
-	}
+	// public void playBlockDustParticles(Material m, int data, Location l,
+	// float rad, float spd) {
+	// for (Player p : getPlayers())
+	// PacketUtils.sendPacket(p, PacketUtils.generateBlockDustParticles(m, data,
+	// l, rad, spd));
+	// }
 
 	public void playParticleEffect(ParticleEffect particle, Location l, float rad, float speed, int amount) {
 		for (Player p : getPlayers())
