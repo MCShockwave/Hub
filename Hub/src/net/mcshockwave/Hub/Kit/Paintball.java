@@ -85,7 +85,8 @@ public class Paintball implements Listener {
 	private Paintball() {
 	}
 
-	public ArrayList<String>	players	= new ArrayList<>(), green = new ArrayList<>(), yellow = new ArrayList<>();
+	public ArrayList<String>	specs	= new ArrayList<>(), players = new ArrayList<>(), green = new ArrayList<>(),
+			yellow = new ArrayList<>();
 
 	public static Paintball newGame(Minigame game, int maxPlayers) {
 		Paintball pg = new Paintball();
@@ -144,7 +145,7 @@ public class Paintball implements Listener {
 
 				for (Paintball pg : games) {
 					if (pg != this) {
-						for (Player p2 : pg.getPlayers()) {
+						for (Player p2 : pg.getPlayers(true)) {
 							p.showPlayer(p2);
 							p2.showPlayer(p);
 						}
@@ -175,6 +176,40 @@ public class Paintball implements Listener {
 		}
 	}
 
+	public void addSpectator(Player p) {
+		for (Paintball pg : games) {
+			for (Player p2 : pg.getPlayers(true)) {
+				p2.hidePlayer(p);
+				p.showPlayer(p2);
+			}
+		}
+		specs.add(p.getName());
+
+		p.teleport(getCenter());
+		p.getInventory().clear();
+
+		p.setAllowFlight(true);
+
+		MCShockwave.send(ChatColor.DARK_AQUA, p, "Now %s", "spectating");
+	}
+
+	public void removeSpectator(Player p) {
+		for (Paintball pg : games) {
+			for (Player p2 : pg.getPlayers(true)) {
+				p2.showPlayer(p);
+				p.showPlayer(p2);
+			}
+		}
+		specs.remove(p.getName());
+
+		p.teleport(HubPlugin.dW().getSpawnLocation());
+		DefaultListener.resetPlayerInv(p);
+
+		p.setAllowFlight(false);
+
+		MCShockwave.send(ChatColor.DARK_AQUA, p, "No longer %s", "spectating");
+	}
+
 	public void start() {
 		start(true);
 	}
@@ -184,8 +219,8 @@ public class Paintball implements Listener {
 
 		for (Paintball pg : games) {
 			if (pg != this) {
-				for (Player p : getPlayers()) {
-					for (Player p2 : pg.getPlayers()) {
+				for (Player p : getPlayers(true)) {
+					for (Player p2 : pg.getPlayers(true)) {
 						p.hidePlayer(p2);
 						p2.hidePlayer(p);
 					}
@@ -244,8 +279,8 @@ public class Paintball implements Listener {
 		send("§6§lGame started!");
 
 		if (randomizeTeams) {
-			ArrayList<Player> randomized = getPlayers();
-			Collections.shuffle(getPlayers(), rand);
+			ArrayList<Player> randomized = getPlayers(false);
+			Collections.shuffle(randomized, rand);
 			for (Player p : randomized) {
 				if (green.size() > yellow.size()) {
 					yellow.add(p.getName());
@@ -281,24 +316,24 @@ public class Paintball implements Listener {
 		}.runTaskTimer(HubPlugin.ins, 10, 10));
 
 		send("§2§lGreen Team:\n");
-		for (Player p : getPlayers(green)) {
+		for (Player p : getPlayersInList(green)) {
 			send("§7§o" + p.getName());
 			grT.addPlayer(p);
 		}
 
 		send("§e§lYellow Team:\n");
-		for (Player p : getPlayers(yellow)) {
+		for (Player p : getPlayersInList(yellow)) {
 			send("§7§o" + p.getName());
 			ylT.addPlayer(p);
 		}
 
 		if (current == Minigame.Gun_Game) {
-			for (Player p : getPlayers()) {
+			for (Player p : getPlayers(false)) {
 				ggtier.put(p.getName(), 0);
 			}
 		}
 
-		for (Player p : getPlayers()) {
+		for (Player p : getPlayers(false)) {
 			respawn(p);
 			p.setHealth(p.getMaxHealth());
 			p.setScoreboard(sb);
@@ -307,8 +342,8 @@ public class Paintball implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, HubPlugin.ins);
 
 		if (current == Minigame.Siege) {
-			Player grn = getPlayers(green).get(rand.nextInt(green.size()));
-			Player ylw = getPlayers(yellow).get(rand.nextInt(yellow.size()));
+			Player grn = getPlayersInList(green).get(rand.nextInt(green.size()));
+			Player ylw = getPlayersInList(yellow).get(rand.nextInt(yellow.size()));
 
 			grnKing = grn.getName();
 			ylwKing = ylw.getName();
@@ -321,7 +356,7 @@ public class Paintball implements Listener {
 		}
 
 		if (current == Minigame.Search_and_Destroy) {
-			Player bmb = getPlayers().get(rand.nextInt(getPlayers().size()));
+			Player bmb = getPlayers(false).get(rand.nextInt(getPlayers(false).size()));
 			grnBomb = green.contains(bmb.getName());
 			bmb.getInventory().addItem(new ItemStack(Material.TNT));
 
@@ -331,7 +366,7 @@ public class Paintball implements Listener {
 			tasks.add(new BukkitRunnable() {
 				public void run() {
 					if (bombPlanted == null) {
-						for (Player p : getPlayers(grnBomb ? green : yellow)) {
+						for (Player p : getPlayersInList(grnBomb ? green : yellow)) {
 							if (p.getInventory().contains(Material.TNT)) {
 								p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.TNT);
 								if (p.getLocation().distanceSquared(getCenter()) < 3 * 3) {
@@ -359,7 +394,7 @@ public class Paintball implements Listener {
 								((float) plantProgress / (float) maxProg) + 1);
 
 						boolean def = false;
-						for (Player p : getPlayers(grnBomb ? yellow : green)) {
+						for (Player p : getPlayersInList(grnBomb ? yellow : green)) {
 							if (p.getLocation().distanceSquared(bombPlanted.getLocation()) < 3 * 3) {
 								send("§6Defusing... (§e" + ((int) (((30 - --defuseProgress) / 30) * 100)) + "%§6)");
 								def = true;
@@ -402,7 +437,7 @@ public class Paintball implements Listener {
 
 			tasks.add(new BukkitRunnable() {
 				public void run() {
-					for (Player p : getPlayers(green)) {
+					for (Player p : getPlayersInList(green)) {
 						if (p.getInventory().contains(Material.WOOL)) {
 							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.WOOL, 4);
 							if (getGreenSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(5)) {
@@ -412,7 +447,7 @@ public class Paintball implements Listener {
 							}
 						}
 					}
-					for (Player p : getPlayers(yellow)) {
+					for (Player p : getPlayersInList(yellow)) {
 						if (p.getInventory().contains(Material.WOOL)) {
 							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.WOOL, 5);
 							if (getYellowSpawn(defaultY).distanceSquared(p.getLocation()) < 3 * 3 && isFlagAtBase(4)) {
@@ -461,7 +496,7 @@ public class Paintball implements Listener {
 						}
 					}
 
-					for (Player p : getPlayers()) {
+					for (Player p : getPlayers(false)) {
 						if (p.getInventory().contains(Material.TNT)) {
 							p.getWorld().playEffect(p.getEyeLocation(), Effect.STEP_SOUND, Material.TNT);
 						}
@@ -506,10 +541,10 @@ public class Paintball implements Listener {
 							: "Yellow".equalsIgnoreCase(winner) ? (te ? p2 : yellow.get(0)) : winner, this);
 		}
 
-		for (Player p : getPlayers()) {
+		for (Player p : getPlayers(true)) {
 			try {
+				p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 				if (!p.isDead()) {
-					p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 					p.teleport(HubPlugin.dW().getSpawnLocation());
 					DefaultListener.resetPlayerInv(p);
 					p.setHealth(p.getMaxHealth());
@@ -521,8 +556,8 @@ public class Paintball implements Listener {
 
 		for (Paintball pg : games) {
 			if (pg != this) {
-				for (Player p : getPlayers()) {
-					for (Player p2 : pg.getPlayers()) {
+				for (Player p : getPlayers(true)) {
+					for (Player p2 : pg.getPlayers(true)) {
 						p.showPlayer(p2);
 						p2.showPlayer(p);
 					}
@@ -554,7 +589,7 @@ public class Paintball implements Listener {
 	}
 
 	public void onDeath(Player p, String msg) {
-		for (Player p2 : getPlayers()) {
+		for (Player p2 : getPlayers(true)) {
 			Team t = sb.getPlayerTeam(p2);
 			if (t == null)
 				continue;
@@ -674,7 +709,7 @@ public class Paintball implements Listener {
 
 			if (players.contains(shooter.getName())) {
 				event.canSee().clear();
-				for (Player p : getPlayers()) {
+				for (Player p : getPlayers(true)) {
 					event.canSee().add(p);
 				}
 			}
@@ -830,16 +865,27 @@ public class Paintball implements Listener {
 	}
 
 	public void send(String msg, ArrayList<String> names) {
-		for (Player p : getPlayers(names)) {
+		for (Player p : getPlayersInList(names)) {
 			p.sendMessage(msg);
 		}
 	}
 
-	public ArrayList<Player> getPlayers() {
-		return getPlayers(players);
+	public ArrayList<Player> getPlayers(boolean all) {
+		if (!all) {
+			return getPlayersInList(players);
+		} else {
+			ArrayList<String> names = new ArrayList<>();
+			for (String s : players) {
+				names.add(s);
+			}
+			for (String s : specs) {
+				names.add(s);
+			}
+			return getPlayersInList(names);
+		}
 	}
 
-	public ArrayList<Player> getPlayers(ArrayList<String> names) {
+	public ArrayList<Player> getPlayersInList(ArrayList<String> names) {
 		ArrayList<Player> ret = new ArrayList<>();
 		for (String pl : names) {
 			if (Bukkit.getPlayer(pl) != null) {
@@ -907,12 +953,12 @@ public class Paintball implements Listener {
 	}
 
 	public void sendPacket(Packet pack) {
-		for (Player p : getPlayers())
+		for (Player p : getPlayers(true))
 			PacketUtils.sendPacket(p, pack);
 	}
 
 	public void playSound(Location l, Sound s, float volume, float pitch) {
-		for (Player p : getPlayers())
+		for (Player p : getPlayers(true))
 			p.playSound(l, s, volume, pitch);
 	}
 
@@ -924,7 +970,7 @@ public class Paintball implements Listener {
 	// }
 
 	public void playParticleEffect(ParticleEffect particle, Location l, float rad, float speed, int amount) {
-		for (Player p : getPlayers())
+		for (Player p : getPlayers(true))
 			PacketUtils.sendPacket(p, PacketUtils.generateParticles(particle, l, rad, speed, amount));
 	}
 
@@ -935,7 +981,7 @@ public class Paintball implements Listener {
 	public void setDroppedItem(Item i) {
 		for (Paintball pg : games) {
 			if (pg != this) {
-				for (Player p : pg.getPlayers()) {
+				for (Player p : pg.getPlayers(true)) {
 					PacketPlayOutEntityDestroy dest = new PacketPlayOutEntityDestroy(i.getEntityId());
 					PacketUtils.sendPacket(p, dest);
 				}
@@ -1005,14 +1051,11 @@ public class Paintball implements Listener {
 
 		int indx = -1;
 		for (final Paintball pg : games) {
-			if (TournamentManager.paintball.containsValue(pg.gameUUID) && !editable) {
-				continue;
-			}
 			indx++;
 			List<String> lore = new ArrayList<>();
 			lore.addAll(Arrays.asList("§c§o" + pg.current, "§6Max Players: §o" + pg.maxPlayers, pg.state.toString(),
 					"", "§7Players:"));
-			for (Player p : pg.getPlayers()) {
+			for (Player p : pg.getPlayers(false)) {
 				lore.add((pg.yellow.contains(p.getName()) ? "§e" : pg.green.contains(p.getName()) ? "§2" : "§8") + "§o"
 						+ p.getName());
 			}
@@ -1031,7 +1074,12 @@ public class Paintball implements Listener {
 						if (pg.state == QUEUED) {
 							pg.addToQueue(p.getName());
 						} else if (pg.state == STARTED) {
-							p.sendMessage("§cGame already started!");
+							for (Paintball pg : games) {
+								if (pg.specs.contains(p.getName())) {
+									pg.removeSpectator(p);
+								}
+							}
+							pg.addSpectator(p);
 						}
 					}
 				});

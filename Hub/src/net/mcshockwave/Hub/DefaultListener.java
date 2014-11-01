@@ -164,36 +164,36 @@ public class DefaultListener implements Listener {
 
 	public static void giveHelm(Player p) {
 		Color c = Color.GRAY;
-		if (SQLTable.hasRank(p.getName(), Rank.GOLD)) {
-			c = Color.YELLOW;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.DIAMOND)) {
-			c = Color.AQUA;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.EMERALD)) {
-			c = Color.GREEN;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.OBSIDIAN)) {
-			c = Color.PURPLE;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.NETHER)) {
-			c = Color.fromRGB(128, 0, 0);
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.ENDER)) {
-			c = Color.BLACK;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.JR_MOD)) {
-			c = Color.ORANGE;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.SR_MOD)) {
-			c = Color.fromRGB(89, 220, 227);
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
-			c = Color.RED;
-		}
-		if (SQLTable.hasRank(p.getName(), Rank.YOUTUBE)) {
-			c = Color.fromRGB(255, 0, 0);
-		}
+		if (!SQLTable.Youtubers.has("Username", p.getName())) {
+			if (SQLTable.hasRank(p.getName(), Rank.GOLD)) {
+				c = Color.YELLOW;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.DIAMOND)) {
+				c = Color.AQUA;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.EMERALD)) {
+				c = Color.GREEN;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.OBSIDIAN)) {
+				c = Color.PURPLE;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.NETHER)) {
+				c = Color.fromRGB(128, 0, 0);
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.ENDER)) {
+				c = Color.BLACK;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.JR_MOD)) {
+				c = Color.ORANGE;
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.SR_MOD)) {
+				c = Color.fromRGB(89, 220, 227);
+			}
+			if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
+				c = Color.RED;
+			}
+		} else
+			c = Color.fromRGB(200, 0, 0);
 		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
 	}
 
@@ -1089,6 +1089,21 @@ public class DefaultListener implements Listener {
 		}
 	}
 
+	@EventHandler
+	public void onPlayerLogin(PlayerLoginEvent e) {
+		final Player p = e.getPlayer();
+		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
+			return;
+		}
+		new BukkitRunnable() {
+			public void run() {
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("IP");
+				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
+			}
+		}.runTaskLater(MCShockwave.instance, 1L);
+	}
+
 	public ItemMenu getMenuMG() {
 		ItemMenu mg = new ItemMenu("MCMinigames Servers", 9);
 
@@ -1205,20 +1220,5 @@ public class DefaultListener implements Listener {
 		 * 
 		 * return bb; }
 		 */
-	}
-
-	@EventHandler
-	public void PlayerIPHandler(PlayerLoginEvent e) {
-		final Player p = e.getPlayer();
-		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
-			return;
-		}
-		new BukkitRunnable() {
-			public void run() {
-				ByteArrayDataOutput out = ByteStreams.newDataOutput();
-				out.writeUTF("IP");
-				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
-			}
-		}.runTaskLater(MCShockwave.instance, 1L);
 	}
 }

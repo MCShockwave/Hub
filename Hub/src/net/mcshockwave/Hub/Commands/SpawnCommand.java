@@ -2,6 +2,7 @@ package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
+import net.mcshockwave.Hub.Kit.Paintball;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,6 +16,12 @@ public class SpawnCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
+			for (Paintball pg : Paintball.games) {
+				if (pg.specs.contains(p.getName())) {
+					pg.removeSpectator(p);
+					return true;
+				}
+			}
 			if (DefaultListener.isInArena(p)) {
 				p.sendMessage("§c/spawn is disabled in the PVP arena");
 				return false;
@@ -22,6 +29,7 @@ public class SpawnCommand implements CommandExecutor {
 			DefaultListener.resetPlayerInv(p);
 			p.teleport(HubPlugin.dW().getSpawnLocation());
 			p.sendMessage(ChatColor.AQUA + "Teleported to spawn");
+			return true;
 		}
 		return false;
 	}
