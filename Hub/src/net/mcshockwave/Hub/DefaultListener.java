@@ -1017,7 +1017,7 @@ public class DefaultListener implements Listener {
 
 		for (ItemStack it : pi.getContents()) {
 			if (it != null && it.getType() != Material.AIR && Gun.fromItem(it) == null) {
-				if (it.getDurability() > 0) {
+				if (it.getDurability() > 0 && it.getType().getMaxDurability() > 16) {
 					it.setDurability((short) 0);
 				}
 			}
