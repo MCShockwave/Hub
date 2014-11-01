@@ -568,7 +568,7 @@ public class Paintball implements Listener {
 		}
 
 		if (current == Minigame.Gun_Game && p.getKiller() != null) {
-			Player k = p.getKiller();
+			final Player k = p.getKiller();
 			int tier = ggtier.get(k.getName());
 			ggtier.remove(k.getName());
 			ggtier.put(k.getName(), ++tier);
@@ -579,7 +579,12 @@ public class Paintball implements Listener {
 				return;
 			}
 
-			giveKit(k);
+			k.getInventory().clear();
+			new BukkitRunnable() {
+				public void run() {
+					giveKit(k);
+				}
+			}.runTaskLater(HubPlugin.ins, 10);
 
 			send((green.contains(p.getName()) ? "§e" : "§2") + k.getName() + "§8 now has the §c"
 					+ Category.Wasted.getGuns()[tier].name);
