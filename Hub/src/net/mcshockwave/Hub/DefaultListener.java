@@ -191,8 +191,8 @@ public class DefaultListener implements Listener {
 		if (SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
 			c = Color.RED;
 		}
-		if (SQLTable.Youtubers.has("Username", p.getName())) {
-			c = Color.fromRGB(128, 0, 0);
+		if (SQLTable.hasRank(p.getName(), Rank.YOUTUBE)) {
+			c = Color.fromRGB(255, 0, 0);
 		}
 		p.getInventory().setHelmet(ItemMetaUtils.setLeatherColor(new ItemStack(Material.LEATHER_HELMET), c));
 	}
@@ -1035,7 +1035,7 @@ public class DefaultListener implements Listener {
 
 	public static void resetPlayerInv(Player p) {
 		p.getInventory().setArmorContents(null);
-		if (SQLTable.hasRank(p.getName(), Rank.IRON) || SQLTable.hasRank(p.getName(), Rank.ADMIN)) {
+		if (SQLTable.hasRank(p.getName(), Rank.IRON) || SQLTable.hasRank(p.getName(), Rank.YOUTUBE)) {
 			giveHelm(p);
 		}
 		p.getInventory().clear();
