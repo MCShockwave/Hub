@@ -1219,6 +1219,6 @@ public class DefaultListener implements Listener {
 				out.writeUTF("IP");
 				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
 			}
-		}.runTaskLater(MCShockwave.instance, 1L);
+		}.runTaskLater(MCShockwave.instance, 3L);
 	}
 }
