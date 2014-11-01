@@ -537,7 +537,7 @@ public class Paintball implements Listener {
 							: "Yellow".equalsIgnoreCase(winner) ? (te ? p2 : yellow.get(0)) : winner, this);
 		}
 
-		for (Player p : getPlayers(true)) {
+		for (Player p : getPlayers(false)) {
 			try {
 				p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 				if (!p.isDead()) {
@@ -548,6 +548,10 @@ public class Paintball implements Listener {
 			} catch (Exception e) {
 				MiscUtils.printStackTrace(e);
 			}
+		}
+
+		for (Player p : getPlayersInList(specs)) {
+			removeSpectator(p);
 		}
 
 		for (Paintball pg : games) {
