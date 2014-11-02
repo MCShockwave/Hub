@@ -180,7 +180,11 @@ public class Paintball implements Listener {
 		for (Paintball pg : games) {
 			for (Player p2 : pg.getPlayers(true)) {
 				p2.hidePlayer(p);
-				p.showPlayer(p2);
+				if (pg.specs.contains(p2.getName())) {
+					p.hidePlayer(p2);
+				} else {
+					p.showPlayer(p2);
+				}
 			}
 		}
 		specs.add(p.getName());

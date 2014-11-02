@@ -804,10 +804,17 @@ public class DefaultListener implements Listener {
 		}
 
 		if (event.getEntityType() == EntityType.PLAYER) {
-			if (!isInArena(event.getEntity()) || event.getCause().name().contains("EXPLOSION")) {
+			Player p = (Player) event.getEntity();
+			for (Paintball pg : Paintball.games) {
+				if (pg.specs.contains(p.getName())) {
+					event.setCancelled(true);
+					return;
+				}
+			}
+			if (!isInArena(p) || event.getCause().name().contains("EXPLOSION")) {
 				event.setCancelled(true);
 			} else {
-				resetDurability((Player) event.getEntity());
+				resetDurability(p);
 			}
 		}
 

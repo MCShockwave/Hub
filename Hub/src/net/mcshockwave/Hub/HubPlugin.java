@@ -13,6 +13,7 @@ import net.mcshockwave.Hub.Kit.TournamentManager;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Entities.CustomEntityRegistrar;
 import net.mcshockwave.MCS.Utils.CommandRegistrar;
+import net.mcshockwave.MCS.Utils.MiscUtils;
 import net.minecraft.server.v1_7_R4.EntityVillager;
 import net.minecraft.server.v1_7_R4.WorldServer;
 
@@ -55,9 +56,13 @@ public class HubPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new DefaultListener(this), this);
 		Bukkit.getPluginManager().registerEvents(RandomEvent.BIOME_LOCK, this);
 
-		CommandRegistrar.registerCommand(ins, TournamentManager.TEAM_BASE_COMMAND.replaceFirst("/", ""));
-		for (String s : TournamentManager.cmds) {
-			CommandRegistrar.registerCommand(ins, TournamentManager.TEAM_BASE_COMMAND.replaceFirst("/", "") + s);
+		try {
+			CommandRegistrar.registerCommand(ins, TournamentManager.TEAM_BASE_COMMAND.replaceFirst("/", ""));
+			for (String s : TournamentManager.cmds) {
+				CommandRegistrar.registerCommand(ins, TournamentManager.TEAM_BASE_COMMAND.replaceFirst("/", "") + s);
+			}
+		} catch (Exception e) {
+			MiscUtils.printStackTrace(e);
 		}
 
 		getCommand("lounge").setExecutor(new LoungeCommand());
