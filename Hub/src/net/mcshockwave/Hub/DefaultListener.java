@@ -965,6 +965,21 @@ public class DefaultListener implements Listener {
 				}
 			}
 		}
+
+		if (isInArena(p)) {
+			try {
+				if (p.getKiller() != null) {
+					String display = "§o" + p.getName();
+					PacketUtils.playTitle(p.getKiller(), 0, 2, 13, "", "§7Killed §6" + display);
+					PacketUtils.playTitle(p, 3, 10, 10, "§6" + p.getKiller().getName(), "§7§oKilled You");
+				} else {
+					PacketUtils.playTitle(p, 3, 10, 10, "§6Nobody", "§7§oKilled You");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		event.setDeathMessage("");
 
 		if (medic.containsKey(p)) {
@@ -996,15 +1011,11 @@ public class DefaultListener implements Listener {
 			}
 			demoman.remove(p);
 		}
-
-		if (isInArena(p)) {
-			if (p.getKiller() != null) {
-				String display = "§o" + p.getName();
-				PacketUtils.playTitle(p.getKiller(), 0, 2, 13, null, "§7Killed §6" + display);
-			} else {
-				PacketUtils.playTitle(p, 3, 10, 10, "§6§lNobody", "§7§oKilled You");
-			}
-		}
+		
+		PlayerRespawnEvent ev = new PlayerRespawnEvent(p, HubPlugin.dW().getSpawnLocation(), false);
+		Bukkit.getPluginManager().callEvent(ev);
+		p.setHealth(p.getMaxHealth());
+		p.teleport(ev.getRespawnLocation());
 	}
 
 	@EventHandler
