@@ -996,6 +996,15 @@ public class DefaultListener implements Listener {
 			}
 			demoman.remove(p);
 		}
+
+		if (isInArena(p)) {
+			if (p.getKiller() != null) {
+				String display = "§o" + p.getName();
+				PacketUtils.playTitle(p.getKiller(), 0, 2, 13, null, "§7Killed §6" + display);
+			} else {
+				PacketUtils.playTitle(p, 3, 10, 10, "§6§lNobody", "§7§oKilled You");
+			}
+		}
 	}
 
 	@EventHandler
