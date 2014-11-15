@@ -231,6 +231,9 @@ public class DefaultListener implements Listener {
 				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("stop the music")) {
 					p.setResourcePack("");
 				}
+				if (ChatColor.stripColor(s.getLine(1)).equalsIgnoreCase("adventure") && ChatColor.stripColor(s.getLine(2)).equalsIgnoreCase("parkour")) {
+					p.teleport(new Location(HubPlugin.dW(), 500.5, 202, 500.5));
+				}
 			}
 		}
 		if (it.getType() == Material.EYE_OF_ENDER) {
