@@ -1,7 +1,8 @@
 package net.mcshockwave.Hub.Kit;
 
 import net.mcshockwave.Hub.HubPlugin;
-import net.mcshockwave.Hub.Kit.Paintball.Minigame;
+import net.mcshockwave.Hub.Kit.Paintball.Paintball;
+import net.mcshockwave.Hub.Kit.Paintball.Paintball.Minigame;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Menu.ItemMenu;
 import net.mcshockwave.MCS.Menu.ItemMenu.Button;

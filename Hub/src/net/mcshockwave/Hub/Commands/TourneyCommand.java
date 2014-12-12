@@ -1,7 +1,7 @@
 package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.Kit.TournamentManager;
-import net.mcshockwave.Hub.Kit.Paintball.Minigame;
+import net.mcshockwave.Hub.Kit.Paintball.Paintball.Minigame;
 import net.mcshockwave.MCS.MCShockwave;
 
 import org.bukkit.command.Command;

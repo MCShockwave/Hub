@@ -12,6 +12,8 @@ C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\HubPlugin.java
 C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Commands\LoungeCommand.java
 C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\DefaultListener.java
 C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Commands\CoinsCommand.java
-C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Kit\Paintball.java
 C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Commands\HubCommand.java
 C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Kit\TournamentManager.java
+C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Kit\Paintball\Paintball.java
+C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Kit\Paintball\PointCaptureEvent.java
+C:\Users\Brady\Documents\GitHub\Hub\Hub\src\net\mcshockwave\Hub\Kit\Paintball\PBObjective.java

@@ -5,8 +5,8 @@ import net.mcshockwave.Hub.Commands.LoungeCommand;
 import net.mcshockwave.Hub.Commands.PVPCommand;
 import net.mcshockwave.Hub.Commands.TrailCommand;
 import net.mcshockwave.Hub.Kit.Kit;
-import net.mcshockwave.Hub.Kit.Paintball;
 import net.mcshockwave.Hub.Kit.TournamentManager;
+import net.mcshockwave.Hub.Kit.Paintball.Paintball;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
@@ -231,7 +231,8 @@ public class DefaultListener implements Listener {
 				if (s.getLine(1).equalsIgnoreCase("Click here to") && s.getLine(2).equalsIgnoreCase("stop the music")) {
 					p.setResourcePack("");
 				}
-				if (ChatColor.stripColor(s.getLine(1)).equalsIgnoreCase("adventure") && ChatColor.stripColor(s.getLine(2)).equalsIgnoreCase("parkour")) {
+				if (ChatColor.stripColor(s.getLine(1)).equalsIgnoreCase("adventure")
+						&& ChatColor.stripColor(s.getLine(2)).equalsIgnoreCase("parkour")) {
 					p.teleport(new Location(HubPlugin.dW(), 500.5, 202, 500.5));
 				}
 			}
@@ -1014,7 +1015,7 @@ public class DefaultListener implements Listener {
 			}
 			demoman.remove(p);
 		}
-		
+
 		PlayerRespawnEvent ev = new PlayerRespawnEvent(p, HubPlugin.dW().getSpawnLocation(), false);
 		Bukkit.getPluginManager().callEvent(ev);
 		p.setHealth(p.getMaxHealth());
@@ -1112,6 +1113,9 @@ public class DefaultListener implements Listener {
 				if (n.equalsIgnoreCase("Staff Servers")) {
 					getMenuStaff().open(p);
 				}
+				if (n.equalsIgnoreCase("Adventure Parkour")) {
+					getMenuAdvPar().open(p);
+				}
 				// if (n.equalsIgnoreCase("Battle Bane")) {
 				// getMenuBB().open(p);
 				// }
@@ -1132,6 +1136,20 @@ public class DefaultListener implements Listener {
 				p.sendPluginMessage(MCShockwave.instance, "BungeeCord", out.toByteArray());
 			}
 		}.runTaskLater(MCShockwave.instance, 3L);
+	}
+
+	public ItemMenu getMenuAdvPar() {
+		ItemMenu adv = new ItemMenu("Adventure Parkour", 9);
+
+		Button tp = new Button(true, Material.EYE_OF_ENDER, 1, 0, "Adventure Parkour", "Click to TP");
+		adv.addButton(tp, 4);
+		tp.setOnClick(new ButtonRunnable() {
+			public void run(Player p, InventoryClickEvent event) {
+				p.teleport(new Location(HubPlugin.advPar(), 500, 200, 500));
+			}
+		});
+		
+		return adv;
 	}
 
 	public ItemMenu getMenuMG() {

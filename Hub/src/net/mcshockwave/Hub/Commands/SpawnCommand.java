@@ -2,7 +2,7 @@ package net.mcshockwave.Hub.Commands;
 
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
-import net.mcshockwave.Hub.Kit.Paintball;
+import net.mcshockwave.Hub.Kit.Paintball.Paintball;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,7 +18,7 @@ public class SpawnCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			for (Paintball pg : Paintball.games) {
 				if (pg.specs.contains(p.getName())) {
-					pg.removeSpectator(p);
+					pg.removeSpectator(p, false);
 					return true;
 				}
 			}

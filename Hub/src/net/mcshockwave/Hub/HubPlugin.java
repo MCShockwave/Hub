@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
@@ -45,10 +46,10 @@ public class HubPlugin extends JavaPlugin {
 	// public static final String[] vNames = { "Minigames Servers",
 	// "Mynerim SG", "Zombiez TD", "Staff Servers" };
 
-	public static final Vector[]	vLocs	= { new Vector(42.5, 94, 20.5), new Vector(0.5, 94, 53.5),
-			new Vector(-41.5, 94, 50.5), new Vector(-41.5, 94, 20.5), new Vector(42.5, 94, 50.5) };
+	public static final Vector[]	vLocs	= { new Vector(-190.5, 136, 252.5), new Vector(-208.5, 130, 274.5),
+			new Vector(-282.5, 136, 252.5), new Vector(-236.5, 136, 206.5), new Vector(-266.5, 147, 229.5) };
 	public static final String[]	vNames	= { "Minigames Servers", "Staff Servers", "Mynerim SG", "Zombiez TD",
-											/* "Battle Bane" */};
+			"Adventure Parkour"			};
 
 	public void onEnable() {
 		ins = this;
@@ -92,6 +93,9 @@ public class HubPlugin extends JavaPlugin {
 			}
 		}, 100l);
 
+		advPar().setTime(5000);
+		advPar().setGameRuleValue("doDaylightCycle", "false");
+
 		// regSigns();
 	}
 
@@ -133,6 +137,14 @@ public class HubPlugin extends JavaPlugin {
 			ss.setCustomName(n);
 			ss.setCustomNameVisible(true);
 		}
+	}
+
+	public static World advPar() {
+		World w = Bukkit.getWorld("HubWorldHalloween");
+		if (w == null) {
+			w = Bukkit.createWorld(new WorldCreator("HubWorldHalloween"));
+		}
+		return w;
 	}
 
 	public static World dW() {

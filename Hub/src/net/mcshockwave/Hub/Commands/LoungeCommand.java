@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 
 public class LoungeCommand implements CommandExecutor {
 
-	public static Vector	lounge	= new Vector(0.5, 100, -14.5);
+	public static Vector	lounge	= new Vector(-264.5, 152, 289.5);
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
