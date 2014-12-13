@@ -11,6 +11,7 @@ import net.mcshockwave.Guns.events.GunHitEvent;
 import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.Hub.Kit.TournamentManager;
+import net.mcshockwave.Hub.Kit.Paintball.PBObjective.Cache;
 import net.mcshockwave.Hub.Kit.Paintball.PBObjective.ControlPoint;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Menu.ItemMenu;
@@ -33,16 +34,19 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -77,6 +81,9 @@ public class Paintball implements Listener {
 	public static ArrayList<Paintball>	games		= new ArrayList<>();
 
 	static Random						rand		= new Random();
+
+	public static final String[]		objNames	= { "Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot",
+			"Golf", "Hotel", "India", "Juliet"		};
 
 	public static int					defaultY	= 101;
 
@@ -333,14 +340,16 @@ public class Paintball implements Listener {
 
 			ylwWaves = sidebar.getScore("§eYellow Waves");
 			ylwWaves.setScore(current.wavesStartYlw);
-		}
 
-		tasks.add(new BukkitRunnable() {
-			public void run() {
-				sidebar.getScore("§2Green").setScore(green.size());
-				sidebar.getScore("§eYellow").setScore(yellow.size());
-			}
-		}.runTaskTimer(HubPlugin.ins, 10, 10));
+			sidebar.getScore("§8---------").setScore(-1);
+		} else {
+			tasks.add(new BukkitRunnable() {
+				public void run() {
+					sidebar.getScore("§2Green").setScore(green.size());
+					sidebar.getScore("§eYellow").setScore(yellow.size());
+				}
+			}.runTaskTimer(HubPlugin.ins, 10, 10));
+		}
 
 		send("§2§lGreen Team:\n");
 		for (Player p : getPlayersInList(green)) {
@@ -375,30 +384,41 @@ public class Paintball implements Listener {
 			objs.add(PBObjective.cp2(this));
 			objs.add(PBObjective.cp3(this));
 
-			for (PBObjective obj : objs) {
-				obj.setActive(true);
-			}
-
 			PBObjective.cp1(this).setColor(PBObjective.GREEN_COLOR, true);
 			PBObjective.cp2(this).setColor(PBObjective.NEUTRAL_COLOR, true);
 			PBObjective.cp3(this).setColor(PBObjective.YELLOW_COLOR, true);
-
-			PBObjective.cp1(this).identifier = "Alpha";
-			PBObjective.cp2(this).identifier = "Bravo";
-			PBObjective.cp3(this).identifier = "Charlie";
 		}
 
 		if (current == Minigame.Occupy) {
-			objs.clear();
 			objs.add(PBObjective.cp2(this));
 
-			for (PBObjective obj : objs) {
-				obj.setActive(true);
-			}
-
 			PBObjective.cp2(this).setColor(PBObjective.NEUTRAL_COLOR, true);
+		}
 
-			PBObjective.cp2(this).identifier = "Alpha";
+		if (current == Minigame.Skirmish) {
+			objs.add(PBObjective.ca1(this));
+			objs.add(PBObjective.cp1(this));
+			objs.add(PBObjective.cp2(this));
+			objs.add(PBObjective.cp3(this));
+			objs.add(PBObjective.ca2(this));
+
+			PBObjective.ca2(this).teamOwn = PBObjective.GREEN_COLOR;
+			PBObjective.cp1(this).teamOwn = PBObjective.GREEN_COLOR;
+			PBObjective.cp2(this).teamOwn = PBObjective.NEUTRAL_COLOR;
+			PBObjective.cp3(this).teamOwn = PBObjective.YELLOW_COLOR;
+			PBObjective.ca1(this).teamOwn = PBObjective.YELLOW_COLOR;
+		}
+
+		if (current == Minigame.Push) {
+			objs.add(PBObjective.cp1(this));
+			objs.add(PBObjective.cp2(this));
+			objs.add(PBObjective.cp3(this));
+			objs.add(PBObjective.ca1(this));
+
+			PBObjective.cp1(this).teamOwn = PBObjective.YELLOW_COLOR;
+			PBObjective.cp2(this).teamOwn = PBObjective.YELLOW_COLOR;
+			PBObjective.cp3(this).teamOwn = PBObjective.YELLOW_COLOR;
+			PBObjective.ca1(this).teamOwn = PBObjective.YELLOW_COLOR;
 		}
 
 		if (current == Minigame.Siege) {
@@ -566,6 +586,31 @@ public class Paintball implements Listener {
 		}
 
 		if (objs.size() > 0) {
+			int number = 0;
+			for (PBObjective obj : objs) {
+				DyeColor team = obj.teamOwn;
+				obj.identifier = objNames[number];
+				obj.number = ++number;
+				obj.setActive(true);
+
+				if (obj instanceof ControlPoint) {
+					((ControlPoint) obj).setColor(team, true);
+				} else {
+					obj.teamOwn = team;
+				}
+			}
+
+			if (current == Minigame.Push) {
+				for (PBObjective o : objs) {
+					o.setActive(false);
+				}
+				PBObjective.cp1(this).setActive(true);
+			}
+
+			for (Player p : getPlayers(false)) {
+				giveKit(p);
+			}
+
 			pointTask = new BukkitRunnable() {
 				public void run() {
 					for (PBObjective pbo : objs.toArray(new PBObjective[0])) {
@@ -585,19 +630,23 @@ public class Paintball implements Listener {
 								}
 							}
 
+							if ((ylwPlayers.size() == 0 && grnPlayers.size() == 0) || !cp.getActive()) {
+								continue;
+							}
+
 							// if team already has obj captured and more people
 							// than other team
 							if (ylwPlayers.size() > grnPlayers.size() && cp.teamOwn == PBObjective.YELLOW_COLOR
 									&& cp.timer <= -ControlPoint.CP_TIMER_MAX || grnPlayers.size() > ylwPlayers.size()
 									&& cp.teamOwn == PBObjective.GREEN_COLOR && cp.timer >= ControlPoint.CP_TIMER_MAX) {
-								return;
+								continue;
 							}
 
 							if (grnPlayers.size() > ylwPlayers.size()) {
 								if (cp.isBeingTaken && cp.teamOwn == PBObjective.GREEN_COLOR) {
 									cp.isBeingTaken = false;
 								} else if (!cp.isBeingTaken) {
-									send("§2§lGreen§7 is attacking §2§l" + cp.identifier + "§7!");
+									send("§2§lGreen§7 is attacking §3§l" + cp.identifier + "§7!");
 									cp.isBeingTaken = true;
 								}
 								cp.timer++;
@@ -605,7 +654,7 @@ public class Paintball implements Listener {
 								if (cp.isBeingTaken && cp.teamOwn == PBObjective.YELLOW_COLOR) {
 									cp.isBeingTaken = false;
 								} else if (!cp.isBeingTaken) {
-									send("§e§lYellow§7 is attacking §2§l" + cp.identifier + "§7!");
+									send("§e§lYellow§7 is attacking §3§l" + cp.identifier + "§7!");
 									cp.isBeingTaken = true;
 								}
 								cp.timer--;
@@ -616,11 +665,17 @@ public class Paintball implements Listener {
 								msg += "|";
 							}
 							if (cp.timer < 0) {
+								if (cp.timer < -ControlPoint.CP_TIMER_MAX) {
+									cp.timer = -ControlPoint.CP_TIMER_MAX;
+								}
 								String pr = msg.substring(0, -cp.timer);
 								String su = msg.substring(-cp.timer, msg.length());
 								msg = "§e" + pr + "§f" + su;
 							}
 							if (cp.timer > 0) {
+								if (cp.timer > ControlPoint.CP_TIMER_MAX) {
+									cp.timer = ControlPoint.CP_TIMER_MAX;
+								}
 								String pr = msg.substring(0, cp.timer);
 								String su = msg.substring(cp.timer, msg.length());
 								msg = "§2" + pr + "§f" + su;
@@ -895,7 +950,7 @@ public class Paintball implements Listener {
 			if (grnWaves.getScore() <= 0) {
 				boolean ylwWins = true;
 				for (Player pl : getPlayersInList(green)) {
-					if (!specs.contains(pl.getName())) {
+					if (!specs.contains(pl.getName()) && !pl.getName().equals(p.getName())) {
 						ylwWins = false;
 						break;
 					}
@@ -909,7 +964,7 @@ public class Paintball implements Listener {
 			if (ylwWaves.getScore() <= 0) {
 				boolean grnWins = true;
 				for (Player pl : getPlayersInList(yellow)) {
-					if (!specs.contains(pl.getName())) {
+					if (!specs.contains(pl.getName()) && !pl.getName().equals(p.getName())) {
 						grnWins = false;
 						break;
 					}
@@ -1109,8 +1164,71 @@ public class Paintball implements Listener {
 			}
 		}
 
+		if (current == Minigame.Occupy) {
+			respawnTeam(team == PBObjective.GREEN_COLOR ? green : yellow);
+
+			if (team == PBObjective.GREEN_COLOR) {
+				grnWaves.setScore(grnWaves.getScore() + 1);
+			} else {
+				ylwWaves.setScore(ylwWaves.getScore() + 1);
+			}
+		}
+
+		if (current == Minigame.Skirmish) {
+			respawnTeam(team == PBObjective.GREEN_COLOR ? green : yellow);
+
+			if (team == PBObjective.GREEN_COLOR && PBObjective.ca2(this).active) {
+				grnWaves.setScore(grnWaves.getScore() + 1);
+			} else if (PBObjective.ca1(this).active) {
+				ylwWaves.setScore(ylwWaves.getScore() + 1);
+			}
+
+			boolean done = true;
+			for (PBObjective obj : objs) {
+				if (obj instanceof ControlPoint && !obj.teamOwn.equals(team) && !obj.equals(cp) || obj instanceof Cache
+						&& !obj.teamOwn.equals(team) && obj.getActive()) {
+					done = false;
+					break;
+				}
+			}
+			if (done) {
+				boolean isGreen = team == PBObjective.GREEN_COLOR;
+				MCShockwave.broadcast(isGreen ? ChatColor.DARK_GREEN : ChatColor.YELLOW,
+						"%s has won a game of paintball!", isGreen ? "Green" : "Yellow");
+				end(isGreen ? "Green" : "Yellow");
+			}
+		}
+
+		if (current == Minigame.Push) {
+			if (team == PBObjective.GREEN_COLOR) {
+				cp.setActive(false);
+				if (cp.id == 1) {
+					PBObjective.cp2(this).setActive(true);
+					grnWaves.setScore(grnWaves.getScore() + 5);
+				}
+				if (cp.id == 2) {
+					PBObjective.cp3(this).setActive(true);
+					grnWaves.setScore(grnWaves.getScore() + 5);
+				}
+				if (cp.id == 3) {
+					PBObjective.ca1(this).setActive(true);
+					ylwWaves.setScore(0);
+				}
+			}
+		}
+
 		String tnam = team == PBObjective.GREEN_COLOR ? "§2§lGreen" : "§e§lYellow";
 		send("§7Team " + tnam + "§7 has captured point §3§l" + cp.identifier);
+	}
+
+	@EventHandler
+	public void onCacheExplode(CacheExplodeEvent event) {
+		// Cache c = event.cache;
+
+		if (current == Minigame.Push) {
+			MCShockwave.broadcast(ChatColor.DARK_GREEN, "%s has won a game of paintball!", "Green");
+			end("Green");
+		}
 	}
 
 	public void respawn(Player p) {
@@ -1151,7 +1269,69 @@ public class Paintball implements Listener {
 			Addon.Laser_Pointer.add(gun);
 		}
 
+		if (objs.size() > 0) {
+			for (PBObjective pbo : objs) {
+				if (pbo instanceof Cache) {
+					pi.setItem(8, ItemMetaUtils.setItemName(new ItemStack(Material.TNT), "C4 Explosive"));
+					break;
+				}
+			}
+		}
+
 		pi.addItem(gun);
+	}
+
+	public HashMap<String, Item>	c4	= new HashMap<>();
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player p = event.getPlayer();
+		Action a = event.getAction();
+		ItemStack it = event.getItem();
+
+		if (it != null && it.getType() == Material.TNT && players.contains(p.getName())
+				&& a.name().contains("RIGHT_CLICK")) {
+			p.setItemInHand(ItemMetaUtils.setItemName(new ItemStack(Material.TRIPWIRE_HOOK), "C4 Detonator"));
+
+			Item i = p.getWorld().dropItem(p.getEyeLocation(), new ItemStack(Material.TNT));
+			c4.put(p.getName(), i);
+
+			i.setPickupDelay(Integer.MAX_VALUE);
+			i.setVelocity(p.getLocation().getDirection().normalize());
+			i.getWorld().playSound(i.getLocation(), Sound.SHOOT_ARROW, 10, 0);
+		}
+
+		if (it != null && it.getType() == Material.TRIPWIRE_HOOK && players.contains(p.getName())
+				&& a.name().contains("RIGHT_CLICK")) {
+			if (c4.containsKey(p.getName())) {
+				Item i = c4.get(p.getName());
+				i.getWorld().createExplosion(i.getLocation(), 6f);
+				for (Entity e : i.getNearbyEntities(10, 10, 10)) {
+					if (e instanceof Damageable) {
+						Damageable dmg = (Damageable) e;
+						dmg.damage(50 / dmg.getLocation().distanceSquared(i.getLocation()) + 1);
+					}
+				}
+				for (PBObjective o : objs) {
+					if (o instanceof Cache) {
+						Cache ca = (Cache) o;
+						if (!(ca.teamOwn == PBObjective.GREEN_COLOR && green.contains(p.getName()) || ca.teamOwn == PBObjective.YELLOW_COLOR
+								&& yellow.contains(p.getName()))
+								&& ca.getLocation().distanceSquared(i.getLocation()) < 6 * 6) {
+							CacheExplodeEvent ev = new CacheExplodeEvent(ca);
+							Bukkit.getPluginManager().callEvent(ev);
+							ca.setActive(false);
+
+							send("§7Cache §3§l" + ca.identifier + "§7 has been destroyed.");
+						}
+					}
+				}
+				i.remove();
+
+				p.setItemInHand(null);
+				c4.remove(p.getName());
+			}
+		}
 	}
 
 	public void send(String msg) {
@@ -1219,7 +1399,16 @@ public class Paintball implements Listener {
 		Occupy(
 			true,
 			true,
-			3);
+			3),
+		Skirmish(
+			true,
+			true,
+			3),
+		Push(
+			true,
+			true,
+			5,
+			15);
 
 		public boolean	allowRespawn;
 		public boolean	altMap;

@@ -1,7 +1,7 @@
 net\mcshockwave\Hub\Kit\RandomEvent$4.class
 net\mcshockwave\Hub\DefaultListener$23.class
 net\mcshockwave\Hub\DefaultListener$8.class
-net\mcshockwave\Hub\Kit\RandomEvent$10.class
+net\mcshockwave\Hub\Kit\Paintball\PBObjective$Cache.class
 net\mcshockwave\Hub\DefaultListener$15.class
 net\mcshockwave\Hub\Kit\RandomEvent$2.class
 net\mcshockwave\Hub\DefaultListener$20.class
@@ -11,7 +11,6 @@ net\mcshockwave\Hub\ServerSelector.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$Minigame.class
 net\mcshockwave\Hub\DefaultListener$16.class
 net\mcshockwave\Hub\Commands\CoinsCommand.class
-net\mcshockwave\Hub\Kit\RandomEvent$8.class
 net\mcshockwave\Hub\HubPlugin.class
 net\mcshockwave\Hub\DefaultListener$14.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$2.class
@@ -28,8 +27,8 @@ net\mcshockwave\Hub\Kit\Paintball\Paintball$5.class
 net\mcshockwave\Hub\DefaultListener$9.class
 net\mcshockwave\Hub\DefaultListener$25.class
 net\mcshockwave\Hub\Commands\TrailCommand.class
-net\mcshockwave\Hub\Kit\RandomEvent$9.class
 net\mcshockwave\Hub\Kit\RandomEvent$5.class
+net\mcshockwave\Hub\Kit\Paintball\CacheExplodeEvent.class
 net\mcshockwave\Hub\DefaultListener$11.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$8.class
 net\mcshockwave\Hub\Kit\RandomEvent$6.class
@@ -54,11 +53,10 @@ net\mcshockwave\Hub\Kit\RandomEvent$1.class
 net\mcshockwave\Hub\HubPlugin$1.class
 net\mcshockwave\Hub\DefaultListener$Currency.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$18.class
-net\mcshockwave\Hub\Kit\RandomEvent$11.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$6.class
 net\mcshockwave\Hub\Commands\PetCommand$MCSPet.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball.class
-net\mcshockwave\Hub\Kit\RandomEvent$1$1.class
+net\mcshockwave\Hub\Kit\RandomEvent$2$1.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$10.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$1.class
 net\mcshockwave\Hub\Kit\TournamentManager$3.class

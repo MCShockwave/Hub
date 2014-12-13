@@ -2,13 +2,17 @@ package net.mcshockwave.Hub.Kit.Paintball;
 
 import net.mcshockwave.Hub.HubPlugin;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public abstract class PBObjective {
 
@@ -44,6 +48,24 @@ public abstract class PBObjective {
 		return cp;
 	}
 
+	public static Cache ca1(Paintball game) {
+		if (getFromIdAndUUID(-1, game.gameUUID.toString()) != null) {
+			return (Cache) getFromIdAndUUID(-1, game.gameUUID.toString());
+		}
+		Cache cp = new Cache(-1, game, new Vector(-459, 83, -521));
+		objs.add(cp);
+		return cp;
+	}
+
+	public static Cache ca2(Paintball game) {
+		if (getFromIdAndUUID(-2, game.gameUUID.toString()) != null) {
+			return (Cache) getFromIdAndUUID(-2, game.gameUUID.toString());
+		}
+		Cache cp = new Cache(-2, game, new Vector(-526, 83, -464));
+		objs.add(cp);
+		return cp;
+	}
+
 	public static PBObjective getFromIdAndUUID(int id, String uuid) {
 		for (PBObjective obj : objs) {
 			if (obj.game.gameUUID.toString().equals(uuid) && obj.id == id) {
@@ -54,24 +76,30 @@ public abstract class PBObjective {
 	}
 
 	boolean				active;
-	int					id;
+	int					id, number = -1;
 	public Paintball	game;
+	public String		identifier	= "";
+
+	public DyeColor		teamOwn;
+
+	public Objective	indicatorObjective;
+	public Score		indicatorScore;
 
 	PBObjective(int id, Paintball game) {
 		this.id = id;
 		this.game = game;
+
+		indicatorObjective = game.sidebar;
+		indicatorScore = null;
 	}
 
 	public static class ControlPoint extends PBObjective {
 
-		public static final int	CP_TIMER_MAX	= 20;
+		public static final int	CP_TIMER_MAX	= 15;
 
 		Location				c1, c2;
 
-		public DyeColor			teamOwn;
 		public int				timer			= 0;
-
-		public String			identifier		= "";
 
 		public boolean			isBeingTaken	= false;
 
@@ -103,25 +131,67 @@ public abstract class PBObjective {
 
 		// TODO add support for multiple games at once
 		public void setActive(boolean active) {
+			this.active = active;
 			if (active) {
 				getBeaconPoint(id).setType(Material.STAINED_GLASS);
+				if (teamOwn != null) {
+					setColor(teamOwn, true);
+				}
 			} else {
 				getBeaconPoint(id).setType(Material.DIAMOND_BLOCK);
+				this.timer = teamOwn == GREEN_COLOR ? CP_TIMER_MAX - 1 : teamOwn == YELLOW_COLOR ? -CP_TIMER_MAX + 1 : 0;
 			}
-			this.active = active;
+			updateObjectiveInfo(active ? teamOwn : null, number);
 		}
 
 		@SuppressWarnings("deprecation")
 		public void setColor(DyeColor color, boolean set) {
 			if (active) {
-				getBeaconPoint(id).setData(color.getData());
+				if (color != null) {
+					getBeaconPoint(id).setData(color.getData());
+				}
 				if (set) {
 					teamOwn = color;
 					timer = teamOwn == GREEN_COLOR ? 20 : teamOwn == YELLOW_COLOR ? -20 : 0;
 					isBeingTaken = false;
+					if (number != -1) {
+						updateObjectiveInfo(teamOwn, number);
+					}
 				}
 			}
 		}
+	}
+
+	public static class Cache extends PBObjective {
+
+		Vector	location;
+
+		public Cache(int id, Paintball game, Vector location) {
+			super(id, game);
+			this.location = location;
+		}
+
+		public Location getLocation() {
+			return new Location(HubPlugin.endWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		}
+
+		@Override
+		public void setActive(boolean active) {
+			if (!this.active && active) {
+				placeCache(getLocation());
+			} else if (this.active && !active) {
+				for (int x = -1; x <= 1; x++) {
+					for (int y = 0; y <= 1; y++) {
+						for (int z = -1; z <= 1; z++) {
+							getLocation().add(x, y, z).getBlock().setType(Material.AIR);
+						}
+					}
+				}
+			}
+			updateObjectiveInfo(active ? teamOwn : null, number);
+			this.active = active;
+		}
+
 	}
 
 	/**
@@ -148,10 +218,92 @@ public abstract class PBObjective {
 		return HubPlugin.endWorld().getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 	}
 
+	// copy-paste from stc
+	public void placeCache(Location loc) {
+		Random rand = new Random();
+		// 1: chest, 2: trap chest, 3: chest / coal block 4: trap chest / coal
+		// block 5: chest / chest 6: trap chest / chest 7: chest / trap chest 8:
+		// trap chest / trap chest
+		int sizeX = 3, sizeZ = 3;
+		int[][] layout = new int[3][3];
+		for (int i = 0; i < layout.length; i++) {
+			for (int j = 0; j < layout[i].length; j++) {
+				layout[i][j] = rand.nextInt(8) + 1;
+			}
+		}
+
+		Location start = loc.clone().add(-1, 0, -1);
+		for (int dx = 0; dx < sizeX; dx++) {
+			for (int dz = 0; dz < sizeZ; dz++) {
+				Block c = start.clone().add(dx, 0, dz).getBlock();
+				Block cu = c.getLocation().clone().add(0, 1, 0).getBlock();
+				int place = layout[dx][dz];
+
+				switch (place) {
+					case 1:
+						c.setType(Material.CHEST);
+						break;
+					case 2:
+						c.setType(Material.TRAPPED_CHEST);
+						break;
+					case 3:
+						c.setType(Material.COAL_BLOCK);
+						cu.setType(Material.CHEST);
+						break;
+					case 4:
+						c.setType(Material.COAL_BLOCK);
+						cu.setType(Material.TRAPPED_CHEST);
+						break;
+					case 5:
+						c.setType(Material.CHEST);
+						cu.setType(Material.CHEST);
+						break;
+					case 6:
+						c.setType(Material.CHEST);
+						cu.setType(Material.TRAPPED_CHEST);
+						break;
+					case 7:
+						c.setType(Material.TRAPPED_CHEST);
+						cu.setType(Material.CHEST);
+						break;
+					case 8:
+						c.setType(Material.TRAPPED_CHEST);
+						cu.setType(Material.CHEST);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 	public abstract void setActive(boolean active);
 
 	public boolean getActive() {
 		return active;
+	}
+
+	public static ChatColor getColor(DyeColor color) {
+		if (color == GREEN_COLOR) {
+			return ChatColor.DARK_GREEN;
+		} else if (color == YELLOW_COLOR) {
+			return ChatColor.YELLOW;
+		} else if (color == NEUTRAL_COLOR) {
+			return ChatColor.WHITE;
+		} else {
+			return ChatColor.GRAY;
+		}
+	}
+
+	public void updateObjectiveInfo(DyeColor color, int id) {
+		if (indicatorObjective == null) {
+			return;
+		}
+		if (indicatorScore != null) {
+			indicatorScore.getObjective().getScoreboard().resetScores(indicatorScore.getEntry());
+		}
+		indicatorScore = indicatorObjective.getScore(getColor(color) + identifier);
+		indicatorScore.setScore(-id - 1);
 	}
 
 }

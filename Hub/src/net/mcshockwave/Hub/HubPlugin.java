@@ -55,7 +55,8 @@ public class HubPlugin extends JavaPlugin {
 		ins = this;
 
 		Bukkit.getPluginManager().registerEvents(new DefaultListener(this), this);
-		Bukkit.getPluginManager().registerEvents(RandomEvent.BIOME_LOCK, this);
+		Bukkit.getPluginManager().registerEvents(RandomEvent.AIRSTRIKE, this);
+		RandomEvent.startTask();
 
 		try {
 			CommandRegistrar.registerCommand(ins, TournamentManager.TEAM_BASE_COMMAND.replaceFirst("/", ""));

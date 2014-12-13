@@ -1020,6 +1020,10 @@ public class DefaultListener implements Listener {
 		Bukkit.getPluginManager().callEvent(ev);
 		p.setHealth(p.getMaxHealth());
 		p.teleport(ev.getRespawnLocation());
+		p.setFireTicks(0);
+		for (PotionEffect pe : p.getActivePotionEffects()) {
+			p.removePotionEffect(pe.getType());
+		}
 	}
 
 	@EventHandler

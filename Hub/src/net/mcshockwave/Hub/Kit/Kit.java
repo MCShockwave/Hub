@@ -62,13 +62,13 @@ public enum Kit {
 		i(Material.LEATHER_BOOTS),
 		i(Material.SHEARS),
 		i(Material.GLOWSTONE_DUST, 5)),
-	Medic(
-		i(Material.LEATHER_HELMET),
-		i(Material.LEATHER_CHESTPLATE),
-		i(Material.GOLD_LEGGINGS),
-		i(Material.GOLD_BOOTS),
-		i(Material.STONE_SWORD),
-		i(Material.BEACON)),
+//	Medic(
+//		i(Material.LEATHER_HELMET),
+//		i(Material.LEATHER_CHESTPLATE),
+//		i(Material.GOLD_LEGGINGS),
+//		i(Material.GOLD_BOOTS),
+//		i(Material.STONE_SWORD),
+//		i(Material.BEACON)),
 	Demoman(
 		i(Material.LEATHER_HELMET),
 		i(Material.LEATHER_CHESTPLATE),
@@ -76,13 +76,13 @@ public enum Kit {
 		i(Material.LEATHER_BOOTS),
 		i(Material.STONE_AXE),
 		i(Material.IRON_BARDING)),
-	Engineer(
-		i(Material.LEATHER_HELMET),
-		i(Material.LEATHER_CHESTPLATE),
-		i(Material.IRON_LEGGINGS),
-		i(Material.LEATHER_BOOTS),
-		i(Material.STONE_SWORD),
-		i(Material.DISPENSER)),
+	// Engineer(
+	// i(Material.LEATHER_HELMET),
+	// i(Material.LEATHER_CHESTPLATE),
+	// i(Material.IRON_LEGGINGS),
+	// i(Material.LEATHER_BOOTS),
+	// i(Material.STONE_SWORD),
+	// i(Material.DISPENSER)),
 	Pyro(
 		i(Material.GOLD_HELMET),
 		i(Material.CHAINMAIL_CHESTPLATE),
