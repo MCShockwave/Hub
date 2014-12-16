@@ -15,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -46,6 +47,13 @@ public class HubCommand implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("event")) {
 				RandomEvent.startRandom();
+			}
+			if (args[0].equalsIgnoreCase("chooseevent")) {
+				RandomEvent.valueOf(args[1].toUpperCase()).startCountdown();
+			}
+			if (args[0].equalsIgnoreCase("dragonrider")) {
+				EnderDragon ed = RandomEvent.spawnDragon();
+				RandomEvent.makeDragonRider(Bukkit.getPlayer(args[1]), ed);
 			}
 			if (args[0].equalsIgnoreCase("sEvent")) {
 				RandomEvent.startRandom(true);

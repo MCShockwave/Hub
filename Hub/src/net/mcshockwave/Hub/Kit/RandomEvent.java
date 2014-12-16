@@ -4,6 +4,7 @@ import net.mcshockwave.Hub.DefaultListener;
 import net.mcshockwave.Hub.HubPlugin;
 import net.mcshockwave.MCS.Utils.CooldownUtils;
 import net.mcshockwave.MCS.Utils.ItemMetaUtils;
+import net.mcshockwave.MCS.Utils.LocUtils;
 import net.mcshockwave.MCS.Utils.SchedulerUtils;
 
 import org.bukkit.Bukkit;
@@ -49,7 +50,8 @@ public enum RandomEvent implements Listener {
 	VOLCANO,
 	ENDER_SWARM(
 		80),
-	ENDER_DRAGON;
+	ENDER_DRAGON,
+	TORNADO;
 
 	static Random				rand			= new Random();
 
@@ -94,7 +96,7 @@ public enum RandomEvent implements Listener {
 		endTask();
 		task = new BukkitRunnable() {
 			public void run() {
-				if (eventRunning == null && rand.nextInt(8) == 0) {
+				if (getInArena().size() > 0 && eventRunning == null && rand.nextInt(8) == 0) {
 					startRandom();
 				}
 			}
@@ -105,6 +107,16 @@ public enum RandomEvent implements Listener {
 		if (task != null) {
 			task.cancel();
 		}
+	}
+
+	public static ArrayList<Player> getInArena() {
+		ArrayList<Player> inArena = new ArrayList<>();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (DefaultListener.isInArena(p)) {
+				inArena.add(p);
+			}
+		}
+		return inArena;
 	}
 
 	public void onActivate() {
@@ -246,34 +258,49 @@ public enum RandomEvent implements Listener {
 
 		if (this == ENDER_DRAGON) {
 			eventRunning = this;
-			EnderDragon ed = (EnderDragon) HubPlugin.endWorld().spawnEntity(getRandom().getLocation(),
-					EntityType.ENDER_DRAGON);
-			ed.setCustomName("Ender Dragon");
-			ed.setHealth(100);
-			ed.setMaxHealth(100);
+			EnderDragon ed = spawnDragon();
 
-			ArrayList<Player> inArena = new ArrayList<>();
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				if (DefaultListener.isInArena(p)) {
-					inArena.add(p);
-				}
+			if (getInArena().size() > 0) {
+				Player r = getInArena().get(rand.nextInt(getInArena().size()));
+				makeDragonRider(r, ed);
 			}
+		}
 
-			if (inArena.size() > 0) {
-				Player r = inArena.get(rand.nextInt(inArena.size()));
-				ed.setPassenger(r);
-				sendToArena(r.getName() + " is the Dovah-Zoriik (Dragon Rider)!");
+		if (this == TORNADO) {
+			for (int i = 0; i < 5; i++) {
+				Location l = getRandom().getLocation();
+				l.setY(l.getWorld().getHighestBlockYAt(l.getBlockX(), l.getBlockZ()));
 
-				r.getInventory().clear();
-				r.getInventory().setArmorContents(new ItemStack[4]);
-				r.getInventory().addItem(
-						ItemMetaUtils.setItemName(new ItemStack(Material.BLAZE_POWDER), "§6Breath Fire"));
-				r.getInventory().addItem(ItemMetaUtils.setItemName(new ItemStack(Material.DRAGON_EGG), "§5Eggrenade"));
+				Material m = l.getBlock().getType() == Material.AIR ? l.clone().add(0, -1, 0).getBlock().getType() : l
+						.getBlock().getType();
+
+				Vector vel = LocUtils.getVelocity(l, new Location(l.getWorld(), 0, 0, 0)).setY(0);
+
+				Tornado.spawnTornado(HubPlugin.ins, l, m, (byte) 0, vel, 0.2f, 200, 1200);
 			}
 		}
 		// if (this == BIOME_LOCK) {
 		// lock = b;
 		// }
+	}
+
+	public static EnderDragon spawnDragon() {
+		EnderDragon ed = (EnderDragon) HubPlugin.endWorld().spawnEntity(getRandom().getLocation(),
+				EntityType.ENDER_DRAGON);
+		ed.setCustomName("Ender Dragon");
+		ed.setHealth(100);
+		ed.setMaxHealth(100);
+		return ed;
+	}
+
+	public static void makeDragonRider(Player r, EnderDragon ed) {
+		ed.setPassenger(r);
+		sendToArena(r.getName() + " is the Dovah-Zoriik (Dragon Rider)!");
+
+		r.getInventory().clear();
+		r.getInventory().setArmorContents(new ItemStack[4]);
+		r.getInventory().addItem(ItemMetaUtils.setItemName(new ItemStack(Material.BLAZE_POWDER), "§6Breath Fire"));
+		r.getInventory().addItem(ItemMetaUtils.setItemName(new ItemStack(Material.DRAGON_EGG), "§5Eggrenade"));
 	}
 
 	public Biome	lock	= null;
@@ -415,7 +442,7 @@ public enum RandomEvent implements Listener {
 		return ret.toArray(new RandomEvent[0]);
 	}
 
-	public Block getRandom(int y) {
+	public static Block getRandom(int y) {
 		World w = HubPlugin.endWorld();
 		int rad = 100;
 		int x = 0;
@@ -442,7 +469,7 @@ public enum RandomEvent implements Listener {
 		return w.getBlockAt(x, y, z);
 	}
 
-	public Block getRandom() {
+	public static Block getRandom() {
 		return getRandom(-1);
 	}
 
@@ -535,7 +562,11 @@ public enum RandomEvent implements Listener {
 				}
 			}
 			if (m == Material.DRAGON_EGG) {
-				fb.getWorld().createExplosion(fb.getLocation(), 10, true);
+				fb.getWorld().createExplosion(fb.getLocation(), 12, true);
+			}
+
+			if (DefaultListener.isInArena(event.getEntity())) {
+				event.setCancelled(true);
 			}
 		}
 	}
