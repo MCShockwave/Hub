@@ -10,6 +10,8 @@ import net.mcshockwave.Hub.Kit.Paintball.Paintball;
 import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.SQLTable;
 import net.mcshockwave.MCS.SQLTable.Rank;
+import net.mcshockwave.MCS.Challenges.Challenge.ChallengeModifier;
+import net.mcshockwave.MCS.Challenges.ChallengeManager;
 import net.mcshockwave.MCS.Currency.PointsUtils;
 import net.mcshockwave.MCS.Menu.ItemMenu;
 import net.mcshockwave.MCS.Menu.ItemMenu.Button;
@@ -967,6 +969,10 @@ public class DefaultListener implements Listener {
 						p2.sendMessage("§7[§e§lPVP§7]§f " + event.getDeathMessage());
 					}
 				}
+				if (p.getKiller() != null) {
+					ChallengeManager
+							.incrChallenge(ChallengeModifier.Hub_Kills, null, p.getKiller().getName(), 1, false);
+				}
 			}
 		}
 
@@ -1152,7 +1158,7 @@ public class DefaultListener implements Listener {
 				p.teleport(new Location(HubPlugin.advPar(), 500, 200, 500));
 			}
 		});
-		
+
 		return adv;
 	}
 
