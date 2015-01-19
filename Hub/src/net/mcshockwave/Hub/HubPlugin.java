@@ -32,13 +32,14 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
 public class HubPlugin extends JavaPlugin {
 
-	public static HubPlugin			ins		= null;
+	public static HubPlugin			ins			= null;
 
 	// public static final Vector[] vLocs = { new Vector(-196.5, 112, 171.5),
 	// new Vector(-188.5, 112, 163.5),
@@ -46,10 +47,13 @@ public class HubPlugin extends JavaPlugin {
 	// public static final String[] vNames = { "Minigames Servers",
 	// "Mynerim SG", "Zombiez TD", "Staff Servers" };
 
-	public static final Vector[]	vLocs	= { new Vector(-190.5, 136, 252.5), new Vector(-208.5, 130, 274.5),
+	public static final Vector[]	vLocs		= { new Vector(-190.5, 136, 252.5), new Vector(-208.5, 130, 274.5),
 			new Vector(-282.5, 136, 252.5), new Vector(-236.5, 136, 206.5), new Vector(-266.5, 147, 229.5) };
-	public static final String[]	vNames	= { "Minigames Servers", "Staff Servers", "Mynerim SG", "Zombiez TD",
-			"Adventure Parkour"			};
+	public static final String[]	vNames		= { "Minigames Servers", "Staff Servers", "Mynerim SG", "Zombiez TD",
+			"Adventure Parkour"				};
+
+	public static boolean			saddlemode	= false;
+	public static BukkitTask		saddleTask	= null;
 
 	public void onEnable() {
 		ins = this;

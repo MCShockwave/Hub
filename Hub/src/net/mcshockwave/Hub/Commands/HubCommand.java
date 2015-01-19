@@ -5,12 +5,14 @@ import net.mcshockwave.Hub.ServerSelector;
 import net.mcshockwave.Hub.Kit.Kit;
 import net.mcshockwave.Hub.Kit.RandomEvent;
 import net.mcshockwave.Hub.Kit.Paintball.Paintball;
+import net.mcshockwave.MCS.MCShockwave;
 import net.mcshockwave.MCS.Utils.PacketUtils;
 import net.minecraft.server.v1_7_R4.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_7_R4.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +21,8 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class HubCommand implements CommandExecutor {
 
@@ -88,6 +92,32 @@ public class HubCommand implements CommandExecutor {
 				PacketPlayOutNamedSoundEffect music = new PacketPlayOutNamedSoundEffect(args[1], -33.5, 96, 35.5, 4, 1);
 				for (Player p2 : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendPacket(p2, music);
+				}
+			}
+
+			if (args[0].equalsIgnoreCase("saddlemode")) {
+				HubPlugin.saddlemode = !HubPlugin.saddlemode;
+
+				MCShockwave.broadcast("Saddle mode %s!", HubPlugin.saddlemode ? "enabled" : "disabled");
+
+				if (HubPlugin.saddlemode) {
+					HubPlugin.saddleTask = new BukkitRunnable() {
+						public void run() {
+							for (Player p : Bukkit.getOnlinePlayers()) {
+								if (!p.getInventory().contains(Material.SADDLE)
+										&& (p.getItemOnCursor() != null
+												&& p.getItemOnCursor().getType() != Material.SADDLE || p
+												.getItemOnCursor() == null)) {
+									p.getInventory().addItem(new ItemStack(Material.SADDLE));
+								}
+							}
+						}
+					}.runTaskTimer(HubPlugin.ins, 2, 2);
+				} else {
+					HubPlugin.saddleTask.cancel();
+					for (Player pl : Bukkit.getOnlinePlayers()) {
+						pl.getInventory().remove(Material.SADDLE);
+					}
 				}
 			}
 		}
