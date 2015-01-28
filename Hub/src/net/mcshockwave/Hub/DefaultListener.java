@@ -75,6 +75,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -140,6 +141,13 @@ public class DefaultListener implements Listener {
 
 		if (Paintball.getGame(p.getName()) != null) {
 			Paintball.getGame(p.getName()).leave(p.getName());
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (event.getPlayer().getPassenger() != null) {
+			event.getPlayer().setPassenger(null);
 		}
 	}
 
@@ -817,7 +825,8 @@ public class DefaultListener implements Listener {
 					return;
 				}
 			}
-			if (!isInArena(p) || event.getCause().name().contains("EXPLOSION")) {
+			if ((!isInArena(p) || event.getCause().name().contains("EXPLOSION"))
+					&& event.getCause() != DamageCause.ENTITY_ATTACK) {
 				event.setCancelled(true);
 			} else {
 				resetDurability(p);
@@ -840,6 +849,7 @@ public class DefaultListener implements Listener {
 
 			if (d.getGameMode() == GameMode.CREATIVE) {
 				event.setCancelled(false);
+				return;
 			}
 
 			if (isInArena(p) && isInArena(d)) {

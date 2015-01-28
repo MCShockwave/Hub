@@ -26,6 +26,7 @@ net\mcshockwave\Hub\Kit\Paintball\PointCaptureEvent.class
 net\mcshockwave\Hub\Kit\Paintball\Paintball$5.class
 net\mcshockwave\Hub\DefaultListener$9.class
 net\mcshockwave\Hub\DefaultListener$25.class
+net\mcshockwave\Hub\Commands\HubCommand$1.class
 net\mcshockwave\Hub\Commands\TrailCommand.class
 net\mcshockwave\Hub\Kit\RandomEvent$5.class
 net\mcshockwave\Hub\Kit\Paintball\CacheExplodeEvent.class
