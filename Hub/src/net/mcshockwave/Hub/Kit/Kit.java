@@ -62,13 +62,13 @@ public enum Kit {
 		i(Material.LEATHER_BOOTS),
 		i(Material.SHEARS),
 		i(Material.GLOWSTONE_DUST, 5)),
-//	Medic(
-//		i(Material.LEATHER_HELMET),
-//		i(Material.LEATHER_CHESTPLATE),
-//		i(Material.GOLD_LEGGINGS),
-//		i(Material.GOLD_BOOTS),
-//		i(Material.STONE_SWORD),
-//		i(Material.BEACON)),
+	// Medic(
+	// i(Material.LEATHER_HELMET),
+	// i(Material.LEATHER_CHESTPLATE),
+	// i(Material.GOLD_LEGGINGS),
+	// i(Material.GOLD_BOOTS),
+	// i(Material.STONE_SWORD),
+	// i(Material.BEACON)),
 	Demoman(
 		i(Material.LEATHER_HELMET),
 		i(Material.LEATHER_CHESTPLATE),
@@ -123,6 +123,9 @@ public enum Kit {
 				b.setOnClick(new ButtonRunnable() {
 					public void run(Player p, InventoryClickEvent event) {
 						// p.teleport(PVPCommand.arena(HubPlugin.dW()));
+						if (p.getPassenger() != null) {
+							p.setPassenger(null);
+						}
 						p.teleport(getRandomLocation(200, HubPlugin.endWorld()));
 						p.sendMessage("§aEntering arena with kit " + k.name());
 
