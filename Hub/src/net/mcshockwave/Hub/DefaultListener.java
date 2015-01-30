@@ -850,7 +850,7 @@ public class DefaultListener implements Listener {
 			if (d.getGameMode() == GameMode.CREATIVE) {
 				event.setCancelled(false);
 				return;
-			} else {
+			} else if (!isInArena(d)) {
 				event.setCancelled(true);
 			}
 
