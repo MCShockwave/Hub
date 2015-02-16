@@ -47,8 +47,8 @@ public class HubPlugin extends JavaPlugin {
 	// public static final String[] vNames = { "Minigames Servers",
 	// "Mynerim SG", "Zombiez TD", "Staff Servers" };
 
-	public static final Vector[]	vLocs		= { new Vector(-190.5, 136, 252.5), new Vector(-208.5, 130, 274.5),
-			new Vector(-282.5, 136, 252.5), new Vector(-236.5, 136, 206.5), new Vector(-266.5, 147, 229.5) };
+	public static final Vector[]	vLocs		= { new Vector(-38.5, 115, 311.5), new Vector(0, 0, 0),
+			new Vector(-46.5, 115, 303.5), new Vector(-38.5, 115, 295.5), new Vector(-30.5, 115, 303.5) };
 	public static final String[]	vNames		= { "Minigames Servers", "Staff Servers", "Mynerim SG", "Zombiez TD",
 			"Adventure Parkour"				};
 
